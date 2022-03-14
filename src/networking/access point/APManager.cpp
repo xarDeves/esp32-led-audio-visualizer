@@ -101,6 +101,19 @@ APManager::APManager() : AsyncWebServer(80){
 </html>)";
 }
 
+void APManager::handleHomePage(AsyncWebServerRequest *request){
+    request->send(200, "text/html", this->htmlIndex);
+}
+
+void APManager::handleReceivedCredentials(AsyncWebServerRequest *request){
+    //SSID
+    Serial.println(request->getParam(0)->value());
+    //password
+    Serial.println(request->getParam(1)->value());
+
+    request->send(200, "text/html", "<h1>Credentials saved succefully. The device will now attempt to connect tou your network. Access your led controller using 192.168.2.200 in your browser after connecting to your network</h1>");
+}
+
 void APManager::init(){
 
     WiFi.softAP(SSID);
@@ -108,52 +121,10 @@ void APManager::init(){
     Serial.print("AP IP address: ");
     Serial.println(IP);
 
-    this->on("/", HTTP_GET, [this](AsyncWebServerRequest *request){
-        request->send(200, "text/html", this->htmlIndex);
-    });
-
-    this->on("/submit", HTTP_POST, [this] (AsyncWebServerRequest *request) {
-        
-        //SSID
-        Serial.println(request->getParam(0)->value());
-        //password
-        Serial.println(request->getParam(1)->value());
-
-        request->send(200, "text/html", "<h1>Credentials saved succefully. The device will now attempt to connect tou your network. Access your led controller using 192.168.2.200 in your browser after connecting to your network</h1>");
-    });
+    this->on("/", HTTP_GET, std::bind(&APManager::handleHomePage, this, std::placeholders::_1));
+    this->on("/submit", HTTP_POST, std::bind(&APManager::handleReceivedCredentials, this, std::placeholders::_1));
 
     this->begin();
-
-    // for (int i = 0; i < 15; i++){
-    /*for (;;){
-        this->client = this->available();
-        if (this->client){
-            while (client.connected()){
-                if (client.available()){
-                    char c = client.read();
-                    Serial.write(c);
-                    this->header += c;
-                    if (c == '\n'){
-                        if (this->currentLine.length() == 0){
-                            client.println("HTTP/1.1 200 OK");
-                            client.println("Content-type:text/html");
-                            client.println("Connection: close");
-                            client.println();
-
-                            this->client.print(this->htmlIndex);
-                            break;
-                        }
-                        else {
-                            currentLine = "";
-                        }
-                    }
-                    else if (c != '\r'){                     
-                        currentLine += c; 
-                    }
-                }
-            }
-        }
-    }*/
 }
 
 APManager::~APManager(){

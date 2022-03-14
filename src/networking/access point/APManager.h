@@ -2,6 +2,7 @@
 
 #include <WiFi.h>
 #include <ESPAsyncWebServer.h>
+//#include <functional>
 
 #define SSID "Led Visualiser"
 
@@ -21,11 +22,11 @@ private:
     String password;
 
     WiFiClient client;
-    //String header;
-    // make a String to hold incoming data from the client
-    //String currentLine;        
 
 	IPAddress *localIP;
 	IPAddress *gateway;
 	IPAddress *subnet;
+
+    void handleHomePage(AsyncWebServerRequest *request);
+    void handleReceivedCredentials(AsyncWebServerRequest *request);
 };

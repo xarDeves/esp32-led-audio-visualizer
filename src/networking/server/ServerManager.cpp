@@ -111,47 +111,30 @@ bool ServerManager::connectToRouter() {
 	
 }
 
+void ServerManager::handleHomePage(AsyncWebServerRequest *request){
+        request->send(200, "text/html", this->htmlIndex);
+}
+
+void ServerManager::handleReceivedColors(AsyncWebServerRequest *request){
+	*this->fftMode = false;
+
+	this->clrRGB->r = (unsigned char)request->getParam(0)->value().toInt();
+	this->clrRGB->g = (unsigned char)request->getParam(1)->value().toInt();
+	this->clrRGB->b = (unsigned char)request->getParam(2)->value().toInt();
+
+	request->send(200, "text/html");
+}
+
+void ServerManager::handleFftPressed(AsyncWebServerRequest *request){
+ 	*this->fftMode = true;
+	request->send(200, "text/html");
+}
+
 void ServerManager::runWebServer() {
 
-	this->on("/", HTTP_GET, [this](AsyncWebServerRequest *request){
-        request->send(200, "text/html", this->htmlIndex);
-    });
-
-	this->on("/colorChanged", HTTP_POST, [this](AsyncWebServerRequest *request){
-		*this->fftMode = false;
-
-		this->clrRGB->r = (unsigned char)request->getParam(0)->value().toInt();
-		this->clrRGB->g = (unsigned char)request->getParam(1)->value().toInt();
-		this->clrRGB->b = (unsigned char)request->getParam(2)->value().toInt();
-
-        request->send(200, "text/html");
-    });
-
-	this->on("/FFTPressed", HTTP_POST, [this](AsyncWebServerRequest *request){
-        *this->fftMode = true;
-        request->send(200, "text/html");
-    });
-
-	/*this->on("/", [this]() {
-			this->send(200, "text/html", htmlIndex);
-		});
-
-	this->on("/colorChanged", [this]() {
-			//TODO fix the +=',' jesus
-			String color = this->arg(0) += ',';
-			unsigned char* colors = this->jsSanitiser->extractColorsFromString(color);
-
-			this->clrRGB->r = colors[0];
-			this->clrRGB->g = colors[1];
-			this->clrRGB->b = colors[2];
-
-			*this->fftMode = false;
-		});
-
-	this->on("/FFTPressed", [this]() {
-			*this->fftMode = true;
-		});
-	*/
+	this->on("/", HTTP_GET, std::bind(&ServerManager::handleHomePage, this, std::placeholders::_1));
+	this->on("/colorChanged", HTTP_POST, std::bind(&ServerManager::handleReceivedColors, this, std::placeholders::_1));
+	this->on("/FFTPressed", HTTP_POST, std::bind(&ServerManager::handleFftPressed, this, std::placeholders::_1));
 
 	this->begin();
 	Serial.println("HTTP server started");

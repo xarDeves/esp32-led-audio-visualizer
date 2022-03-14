@@ -26,4 +26,9 @@ private:
 
 	String htmlIndex;
 	bool *fftMode;
+
+	void handleHomePage(AsyncWebServerRequest *request);
+	void handleReceivedColors(AsyncWebServerRequest *request);
+	void handleFftPressed(AsyncWebServerRequest *request);
+
 };
