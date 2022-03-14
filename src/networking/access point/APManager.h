@@ -2,7 +2,7 @@
 
 #include <WiFi.h>
 #include <ESPAsyncWebServer.h>
-//#include <functional>
+#include "persistence/EEPROMManager.h"
 
 #define SSID "Led Visualiser"
 
@@ -11,7 +11,8 @@ class APManager : public AsyncWebServer {
 public:
     APManager();
 
-    void init();
+    bool credentialsReceived;
+    void initAccessPoint();
 
     ~APManager();
 

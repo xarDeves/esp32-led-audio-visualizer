@@ -3,9 +3,7 @@
 #include "colorUtils/Colors.h"
 #include <ESPAsyncWebServer.h>
 #include <WiFi.h>
-#include <vector>
-
-#define SSID "sou klevw ta accounts"
+#include "persistence/EEPROMManager.h"
 
 class ServerManager : public AsyncWebServer{
 

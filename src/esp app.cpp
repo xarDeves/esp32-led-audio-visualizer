@@ -23,25 +23,23 @@ void setup(){
 	Serial.begin(115200);
 
 	engine = new Engine(ColorModes::COLOR_MODE, clrRGB, clrAbstract);
+	apManager = new APManager();
 	server = new ServerManager(clrRGB, fftMode);
-	//apManager = new APManager();
 	ledStripManager = new LedStripManager();
 
-	//apManager->init();
-
-	// abstract even further
-	if (server->connectToRouter()){
-		server->runWebServer();
+	//random exception accures, check destructors
+	apManager->initAccessPoint();
+	for (int i = 0; i < 15; i++){
+		if (apManager->credentialsReceived) break;
+		delay(1000);
 	}
-	/*else{
-		delete(server);
-	}*/
-
+	delete apManager;
+	if (server->connectToRouter()) server->runWebServer();
+	else delete(server);
 }
 
-
 void loop() {
-	//read analog inputs
+	//read analog inputs (most possibly on free core)
 	if (fftMode)engine->executeCycle();
 	ledStripManager->emitToLedStrip(clrRGB);
 }

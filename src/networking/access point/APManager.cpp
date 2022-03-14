@@ -1,22 +1,14 @@
 #include "networking/access point/APManager.h"
 
-// init access point
-// set timeout for 10? seconds
-// write to storage if form data are received
-// read from storage and set credentials
-
-// NOTE
-// string received must be a properly terminated C string
-// addr[0] = SSIDStringSize | addr[SSIDStringSize + 1] = passwordAddr | addr[passwordAddr] = password
-
-// NOTE
-// if a client disconects, terminate
+// if a client disconects, terminate (?)
 
 APManager::APManager() : AsyncWebServer(80){
 
     this->localIP = new IPAddress(192, 168, 2, 200);
     this->gateway = new IPAddress(192, 168, 2, 252);
     this->subnet = new IPAddress(255, 255, 0, 0);
+
+    this->credentialsReceived = false;
 
     this->htmlIndex = R"(<!DOCTYPE html>
 <html>
@@ -92,7 +84,7 @@ APManager::APManager() : AsyncWebServer(80){
                 <label for="SSID"><strong>SSID (name of your wifi network)</strong></label>
                 <input type="text" placeholder="Enter SSID" name="SSID" required>
                 <label for="psw"><strong>Password</strong></label>
-                <input type="password" placeholder="Enter Password" name="psw" required>
+                <input type="password" placeholder="Enter Password" name="psw">
             </div>
             <button type="submit">Save</button>
     </form>
@@ -106,15 +98,22 @@ void APManager::handleHomePage(AsyncWebServerRequest *request){
 }
 
 void APManager::handleReceivedCredentials(AsyncWebServerRequest *request){
+    //TODO refer by atr name
     //SSID
-    Serial.println(request->getParam(0)->value());
+    String ssid = request->getParam(0)->value();
     //password
-    Serial.println(request->getParam(1)->value());
+    String pass = request->getParam(1)->value();
+
+    EEPROMManager::writeWifiCredentials(ssid, pass);
 
     request->send(200, "text/html", "<h1>Credentials saved succefully. The device will now attempt to connect tou your network. Access your led controller using 192.168.2.200 in your browser after connecting to your network</h1>");
+
+    this->credentialsReceived = true;
+    return;
 }
 
-void APManager::init(){
+//make ip static
+void APManager::initAccessPoint(){
 
     WiFi.softAP(SSID);
     IPAddress IP = WiFi.softAPIP();
@@ -131,8 +130,4 @@ APManager::~APManager(){
 
     client.stop();
     this->end();
-
-    //should work...
-    delete this;
-    //this->close();
 }

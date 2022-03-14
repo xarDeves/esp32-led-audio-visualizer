@@ -91,10 +91,15 @@ bool ServerManager::connectToRouter() {
 		Serial.println("STA Failed to configure");
 	}
 
-	WiFi.begin(SSID, NULL);
+    String ssid;
+    String pass;
+
+    EEPROMManager::readWifiCredentials(ssid, pass);
+
+	WiFi.begin(ssid.c_str(), pass.c_str());
 	WiFi.setSleep(false);
 
-	for (int i = 0; i < 5; i++){
+	for (int i = 0; i < 10; i++){
 		if (WiFi.status() == WL_CONNECTED) {
 			Serial.println("");
 			Serial.println("WiFi connected successfully");
@@ -142,13 +147,9 @@ void ServerManager::runWebServer() {
 
 ServerManager::~ServerManager(){
 
-	//this->stop();
-	//this->close();
-
 	delete this->localIP;
 	delete this->gateway;
 	delete this->subnet;
 
-	//should work...
-	delete this;
+    this->end();
 }
