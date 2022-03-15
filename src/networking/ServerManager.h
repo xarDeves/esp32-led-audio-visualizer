@@ -5,6 +5,8 @@
 #include <WiFi.h>
 #include "persistence/EEPROMManager.h"
 
+#define ACCESS_POINT_SSID "Led Visualiser"
+
 class ServerManager : public AsyncWebServer{
 
 public:
@@ -12,8 +14,7 @@ public:
 
 	Colors::RGB *clrRGB;
 
-	bool connectToRouter();
-	void runWebServer();
+	void init();
 
 	~ServerManager();
 
@@ -22,11 +23,18 @@ private:
 	IPAddress *gateway;
 	IPAddress *subnet;
 
-	String htmlIndex PROGMEM;
+	String staticIndex PROGMEM;
+	String accessPointIndex PROGMEM;
 	bool *fftMode;
 
-	void handleHomePage(AsyncWebServerRequest *request);
+	void initAccessPoint();
+
+	//static webserver
+	void handleHomePageStatic(AsyncWebServerRequest *request);
 	void handleReceivedColors(AsyncWebServerRequest *request);
 	void handleFftPressed(AsyncWebServerRequest *request);
 
+	//access point
+    void handleHomePageAccessPoint(AsyncWebServerRequest *request);
+    void handleReceivedCredentials(AsyncWebServerRequest *request);
 };
