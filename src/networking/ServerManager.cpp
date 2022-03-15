@@ -5,8 +5,8 @@ ServerManager::ServerManager(struct Colors::RGB& clrRGB, bool& fftMode) : AsyncW
 	this->clrRGB = &clrRGB;
 	this->fftMode = &fftMode;
 
-	this->localIP = new IPAddress(192, 168, 2, 200);
-	this->gateway = new IPAddress(192, 168, 2, 252);
+	this->localIP = new IPAddress();
+	this->gateway = new IPAddress();
 	this->subnet = new IPAddress(255, 255, 0, 0);
 
 	this->staticIndex = R"(<html>
@@ -156,6 +156,10 @@ ServerManager::ServerManager(struct Colors::RGB& clrRGB, bool& fftMode) : AsyncW
                 <input type="text" placeholder="Enter SSID" name="SSID" required>
                 <label for="psw"><strong>Password</strong></label>
                 <input type="password" placeholder="Enter Password" name="psw">
+                <label for="connectIP"><strong>controller's IP address</strong></label>
+                <input type="text" placeholder="Enter IP address" name="ipAddr" value="192.168.2.200" required>
+                <label for="gateway"><strong>controller's IP address</strong></label>
+                <input type="text" placeholder="Enter gateway" name="ipAddr" value="192.168.2.2" required>
             </div>
             <button type="submit">Save</button>
     </form>
@@ -167,33 +171,36 @@ ServerManager::ServerManager(struct Colors::RGB& clrRGB, bool& fftMode) : AsyncW
 
 void ServerManager::initAccessPoint() {
 
+    Serial.println("initiating access point");
+
     WiFi.softAP(ACCESS_POINT_SSID);
 
     this->on("/", HTTP_GET, std::bind(&ServerManager::handleHomePageAccessPoint, this, std::placeholders::_1));
     this->on("/submit", HTTP_POST, std::bind(&ServerManager::handleReceivedCredentials, this, std::placeholders::_1));
 
     this->begin();
+
+    Serial.println("success");
 }
 
 void ServerManager::init() {
 
-    String ssid;
-    String pass;
+    EEPROMManager::readWifiCredentials(this->netInfo);
 
-    EEPROMManager::readWifiCredentials(ssid, pass);
-
-    if (ssid.isEmpty()){
+    if (this->netInfo.ssid[0] == '\0' || this->netInfo.ip[0] == '\0'  || this->netInfo.gateway[0] == '\0' ){
         this->initAccessPoint();
         return;
     }
 
     WiFi.mode(WIFI_STA);
 
+    this->localIP->fromString(this->netInfo.ip);
+    this->gateway->fromString(this->netInfo.gateway);
 	if (!WiFi.config(*this->localIP, *this->gateway, *this->subnet)) {
 		Serial.println("STA Failed to configure");
 	}   
 
-	WiFi.begin(ssid.c_str(), pass.c_str());
+	WiFi.begin(this->netInfo.ssid, this->netInfo.pass);
 	WiFi.setSleep(false);
 
     //10 secs
@@ -201,6 +208,8 @@ void ServerManager::init() {
     unsigned long previousMillis = 0;
     unsigned long currentMillis = millis();
     previousMillis = currentMillis;
+
+    Serial.println("attempting to connect to: " + this->localIP->toString());
 
     while(WiFi.status() != WL_CONNECTED) {
         currentMillis = millis();
@@ -217,7 +226,7 @@ void ServerManager::init() {
 	Serial.print("Got IP: ");
 	Serial.println(WiFi.localIP());
     
-	this->on("/", HTTP_GET, std::bind(&ServerManager::handleHomePageStatic, this, std::placeholders::_1));
+	//this->on("/", HTTP_GET, std::bind(&ServerManager::handleHomePageStatic, this, std::placeholders::_1));
 	this->on("/colorChanged", HTTP_POST, std::bind(&ServerManager::handleReceivedColors, this, std::placeholders::_1));
 	this->on("/FFTPressed", HTTP_POST, std::bind(&ServerManager::handleFftPressed, this, std::placeholders::_1));
 
@@ -225,9 +234,9 @@ void ServerManager::init() {
 	Serial.println("HTTP server started");
 }
 
-void ServerManager::handleHomePageStatic(AsyncWebServerRequest *request){
-        request->send(200, "text/html", this->staticIndex);
-}
+//void ServerManager::handleHomePageStatic(AsyncWebServerRequest *request){
+//        request->send(200, "text/html", this->staticIndex);
+//}
 
 void ServerManager::handleReceivedColors(AsyncWebServerRequest *request){
 	*this->fftMode = false;
@@ -249,18 +258,25 @@ void ServerManager::handleHomePageAccessPoint(AsyncWebServerRequest *request){
 }
 
 void ServerManager::handleReceivedCredentials(AsyncWebServerRequest *request){
-    //TODO refer by atr name
     //SSID
-    String ssid = request->getParam(0)->value();
+    strcpy(this->netInfo.ssid, request->getParam(0)->value().c_str());
+    //this->netInfo.ssid = request->getParam(0)->value().c_str();
     //password
-    String pass = request->getParam(1)->value();
+    strcpy(this->netInfo.pass, request->getParam(1)->value().c_str());
+    //this->netInfo.pass = request->getParam(1)->value().c_str();
+    //ip address
+    strcpy(this->netInfo.ip, request->getParam(2)->value().c_str());
+    //this->netInfo.ip = request->getParam(2)->value().c_str();
+    //gateway address
+    strcpy(this->netInfo.gateway, request->getParam(3)->value().c_str());
+    //this->netInfo.gateway = request->getParam(3)->value().c_str();
 
-    EEPROMManager::writeWifiCredentials(ssid, pass);
+    EEPROMManager::writeWifiCredentials(this->netInfo);
 
     //this looks like shit
-    request->send(200, "text/html", "<h1>Credentials saved succefully. The device will now attempt to connect tou your network. Access your led controller using 192.168.2.200 in your browser after connecting to your network</h1>");
+    request->send(200, "text/html", "<h1>Done. ESP will restart, connect to your router and go to IP address: 192.168.2.200");
 
-    delay(2000);
+    delay(1000);
     ESP.restart();
 }
 

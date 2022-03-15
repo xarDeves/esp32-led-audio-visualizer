@@ -1,9 +1,9 @@
 #include "Engine.h"
 
 Engine::Engine(
-	enum ColorModes mode,
-	struct Colors::RGB& clrRGB,
-	struct Colors::ABSTRACT& clrAbstract
+	ColorModes mode,
+	Colors::RGB& clrRGB,
+ 	Colors::ABSTRACT& clrAbstract
 ) {
 
 	this->FFT = new arduinoFFT(vReal, vImag, SAMPLES, SAMPLING_FREQ);

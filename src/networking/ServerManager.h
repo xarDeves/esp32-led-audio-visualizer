@@ -2,8 +2,9 @@
 
 #include "colorUtils/Colors.h"
 #include <ESPAsyncWebServer.h>
-#include <WiFi.h>
 #include "persistence/EEPROMManager.h"
+#include "networking/NetInfo.h"
+#include <WiFi.h>
 
 #define ACCESS_POINT_SSID "Led Visualiser"
 
@@ -23,6 +24,9 @@ private:
 	IPAddress *gateway;
 	IPAddress *subnet;
 
+	NetInfo::info netInfo;
+
+	//implement color picker page for both static and access point
 	String staticIndex PROGMEM;
 	String accessPointIndex PROGMEM;
 	bool *fftMode;
@@ -30,7 +34,7 @@ private:
 	void initAccessPoint();
 
 	//static webserver
-	void handleHomePageStatic(AsyncWebServerRequest *request);
+	//void handleHomePageStatic(AsyncWebServerRequest *request);
 	void handleReceivedColors(AsyncWebServerRequest *request);
 	void handleFftPressed(AsyncWebServerRequest *request);
 
