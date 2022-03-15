@@ -22,7 +22,7 @@ private:
 	IPAddress *gateway;
 	IPAddress *subnet;
 
-	String htmlIndex;
+	String htmlIndex PROGMEM;
 	bool *fftMode;
 
 	void handleHomePage(AsyncWebServerRequest *request);

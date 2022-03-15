@@ -1,14 +1,12 @@
 #include "networking/access point/APManager.h"
 
-// if a client disconects, terminate (?)
-
 APManager::APManager() : AsyncWebServer(80){
 
     this->localIP = new IPAddress(192, 168, 2, 200);
     this->gateway = new IPAddress(192, 168, 2, 252);
     this->subnet = new IPAddress(255, 255, 0, 0);
 
-    this->credentialsReceived = false;
+    this->shutdown = false;
 
     this->htmlIndex = R"(<!DOCTYPE html>
 <html>
@@ -97,6 +95,7 @@ void APManager::handleHomePage(AsyncWebServerRequest *request){
     request->send(200, "text/html", this->htmlIndex);
 }
 
+// if a client disconects, terminate (?)s
 void APManager::handleReceivedCredentials(AsyncWebServerRequest *request){
     //TODO refer by atr name
     //SSID
@@ -106,19 +105,21 @@ void APManager::handleReceivedCredentials(AsyncWebServerRequest *request){
 
     EEPROMManager::writeWifiCredentials(ssid, pass);
 
+    //this looks like shit
     request->send(200, "text/html", "<h1>Credentials saved succefully. The device will now attempt to connect tou your network. Access your led controller using 192.168.2.200 in your browser after connecting to your network</h1>");
 
-    this->credentialsReceived = true;
+    this->shutdown = true;
     return;
 }
 
-//make ip static
+//make ip static (192.168.2.200)
 void APManager::initAccessPoint(){
 
     WiFi.softAP(SSID);
-    IPAddress IP = WiFi.softAPIP();
-    Serial.print("AP IP address: ");
-    Serial.println(IP);
+
+    if (!WiFi.config(*this->localIP, *this->gateway, *this->subnet)) {
+		Serial.println("STA Failed to configure");
+	}
 
     this->on("/", HTTP_GET, std::bind(&APManager::handleHomePage, this, std::placeholders::_1));
     this->on("/submit", HTTP_POST, std::bind(&APManager::handleReceivedCredentials, this, std::placeholders::_1));
@@ -128,6 +129,9 @@ void APManager::initAccessPoint(){
 
 APManager::~APManager(){
 
-    client.stop();
+	delete this->localIP;
+	delete this->gateway;
+	delete this->subnet;
+    
     this->end();
 }

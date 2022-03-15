@@ -10,6 +10,7 @@
             "includePath": [
                 "c:/Users/chnte/Desktop/Programming/led audio visualiser (esp)/esp app/include",
                 "c:/Users/chnte/Desktop/Programming/led audio visualiser (esp)/esp app/src",
+                "C:/Users/chnte/.platformio/packages/framework-arduinoespressif32/libraries/EEPROM/src",
                 "C:/Users/chnte/Documents/Arduino/libraries/arduinoFFT/src",
                 "C:/Users/chnte/Documents/Arduino/libraries/ESPAsyncWebServer-master/src",
                 "C:/Users/chnte/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
@@ -85,7 +86,6 @@
                 "C:/Users/chnte/.platformio/packages/framework-arduinoespressif32/libraries/BLE/src",
                 "C:/Users/chnte/.platformio/packages/framework-arduinoespressif32/libraries/BluetoothSerial/src",
                 "C:/Users/chnte/.platformio/packages/framework-arduinoespressif32/libraries/DNSServer/src",
-                "C:/Users/chnte/.platformio/packages/framework-arduinoespressif32/libraries/EEPROM/src",
                 "C:/Users/chnte/.platformio/packages/framework-arduinoespressif32/libraries/ESP32/src",
                 "C:/Users/chnte/.platformio/packages/framework-arduinoespressif32/libraries/ESPmDNS/src",
                 "C:/Users/chnte/.platformio/packages/framework-arduinoespressif32/libraries/FFat/src",
@@ -112,6 +112,7 @@
                 "path": [
                     "c:/Users/chnte/Desktop/Programming/led audio visualiser (esp)/esp app/include",
                     "c:/Users/chnte/Desktop/Programming/led audio visualiser (esp)/esp app/src",
+                    "C:/Users/chnte/.platformio/packages/framework-arduinoespressif32/libraries/EEPROM/src",
                     "C:/Users/chnte/Documents/Arduino/libraries/arduinoFFT/src",
                     "C:/Users/chnte/Documents/Arduino/libraries/ESPAsyncWebServer-master/src",
                     "C:/Users/chnte/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
@@ -187,7 +188,6 @@
                     "C:/Users/chnte/.platformio/packages/framework-arduinoespressif32/libraries/BLE/src",
                     "C:/Users/chnte/.platformio/packages/framework-arduinoespressif32/libraries/BluetoothSerial/src",
                     "C:/Users/chnte/.platformio/packages/framework-arduinoespressif32/libraries/DNSServer/src",
-                    "C:/Users/chnte/.platformio/packages/framework-arduinoespressif32/libraries/EEPROM/src",
                     "C:/Users/chnte/.platformio/packages/framework-arduinoespressif32/libraries/ESP32/src",
                     "C:/Users/chnte/.platformio/packages/framework-arduinoespressif32/libraries/ESPmDNS/src",
                     "C:/Users/chnte/.platformio/packages/framework-arduinoespressif32/libraries/FFat/src",

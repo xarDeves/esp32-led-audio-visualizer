@@ -4,7 +4,8 @@
 
 #define EEPROM_SIZE 128
 
-//TODO add comments and refactor
+//add comments
+//refactor input params as struct for arbitary amount of data ?
 namespace EEPROMManager{
     
     static void writeWifiCredentials(String ssid, String pass){

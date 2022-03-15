@@ -6,8 +6,10 @@
 #include "colorUtils/ColorModes.h"
 
 // FFT parameters
-#define SAMPLES 512			// Must be a power of 2
-#define SAMPLING_FREQ 40000 // Hz, must be 40000 or less due to ADC conversion time. Determines maximum frequency that can be analysed by the FFT Fmax=sampleF/2.
+// Must be a power of 2
+#define SAMPLES 512
+// Hz, must be 40000 or less due to ADC conversion time. Determines maximum frequency that can be analysed by the FFT Fmax=sampleF/2.
+#define SAMPLING_FREQ 40000
 #define AUDIO_IN_PIN 34
 #define NOISE 600.0f
 

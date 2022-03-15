@@ -11,19 +11,20 @@ class APManager : public AsyncWebServer {
 public:
     APManager();
 
-    bool credentialsReceived;
+    bool shutdown;
     void initAccessPoint();
 
     ~APManager();
 
 private:
-	String htmlIndex;
+	String htmlIndex PROGMEM;
 
     String ssid;
     String password;
 
-    WiFiClient client;
+    //AsyncWebSocket* ws;
 
+    //globalize
 	IPAddress *localIP;
 	IPAddress *gateway;
 	IPAddress *subnet;
