@@ -85,7 +85,7 @@ ServerManager::ServerManager(struct Colors::RGB& clrRGB, bool& fftMode) : AsyncW
 
 bool ServerManager::connectToRouter() {
 
-	//if credentials != null
+    WiFi.mode(WIFI_STA);
 
 	if (!WiFi.config(*this->localIP, *this->gateway, *this->subnet)) {
 		Serial.println("STA Failed to configure");
@@ -99,20 +99,26 @@ bool ServerManager::connectToRouter() {
 	WiFi.begin(ssid.c_str(), pass.c_str());
 	WiFi.setSleep(false);
 
-	for (int i = 0; i < 10; i++){
-		if (WiFi.status() == WL_CONNECTED) {
-			Serial.println("");
-			Serial.println("WiFi connected successfully");
-			Serial.print("Got IP: ");
-			Serial.println(WiFi.localIP());
-			return true;
-		}
-		else{
-			delay(1000);
-			Serial.print(".");
-		}
-	}
-	return false;
+    //10 secs
+    const long interval = 10000;
+    unsigned long previousMillis = 0;
+    unsigned long currentMillis = millis();
+    previousMillis = currentMillis;
+
+    while(WiFi.status() != WL_CONNECTED) {
+        currentMillis = millis();
+        if (currentMillis - previousMillis >= interval) {
+            Serial.println("Failed to connect.");
+            return false;
+        }
+    }
+
+    Serial.println("");
+	Serial.println("WiFi connected successfully");
+	Serial.print("Got IP: ");
+	Serial.println(WiFi.localIP());
+    
+	return true;
 	
 }
 
