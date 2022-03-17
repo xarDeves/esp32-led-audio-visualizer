@@ -20,9 +20,9 @@ public:
 	~ServerManager();
 
 private:
-	IPAddress *localIP;
-	IPAddress *gateway;
-	IPAddress *subnet;
+	IPAddress localIP;
+	IPAddress gateway;
+	IPAddress subnet;
 
 	NetInfo::info netInfo;
 

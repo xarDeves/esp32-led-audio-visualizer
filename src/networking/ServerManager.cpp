@@ -5,10 +5,6 @@ ServerManager::ServerManager(struct Colors::RGB& clrRGB, bool& fftMode) : AsyncW
 	this->clrRGB = &clrRGB;
 	this->fftMode = &fftMode;
 
-	this->localIP = new IPAddress();
-	this->gateway = new IPAddress();
-	this->subnet = new IPAddress(255, 255, 0, 0);
-
 	this->staticIndex = R"(<html>
 
 <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
@@ -158,8 +154,10 @@ ServerManager::ServerManager(struct Colors::RGB& clrRGB, bool& fftMode) : AsyncW
                 <input type="password" placeholder="Enter Password" name="psw">
                 <label for="connectIP"><strong>controller's IP address</strong></label>
                 <input type="text" placeholder="Enter IP address" name="ipAddr" value="192.168.2.200" required>
-                <label for="gateway"><strong>controller's IP address</strong></label>
-                <input type="text" placeholder="Enter gateway" name="ipAddr" value="192.168.2.2" required>
+                <label for="gateway"><strong>controller's gateway address</strong></label>
+                <input type="text" placeholder="Enter gateway address" name="ipAddr" value="192.168.2.2" required>
+                <label for="gateway"><strong>controller's subnet mask</strong></label>
+                <input type="text" placeholder="Enter subnet mask" name="subnetAddr" value="255.255.0.0" required>
             </div>
             <button type="submit">Save</button>
     </form>
@@ -171,7 +169,7 @@ ServerManager::ServerManager(struct Colors::RGB& clrRGB, bool& fftMode) : AsyncW
 
 void ServerManager::initAccessPoint() {
 
-    Serial.println("initiating access point");
+    Serial.println("initializing access point");
 
     WiFi.softAP(ACCESS_POINT_SSID);
 
@@ -180,7 +178,7 @@ void ServerManager::initAccessPoint() {
 
     this->begin();
 
-    Serial.println("success");
+    Serial.println("access point initialized");
 }
 
 void ServerManager::init() {
@@ -194,9 +192,10 @@ void ServerManager::init() {
 
     WiFi.mode(WIFI_STA);
 
-    this->localIP->fromString(this->netInfo.ip);
-    this->gateway->fromString(this->netInfo.gateway);
-	if (!WiFi.config(*this->localIP, *this->gateway, *this->subnet)) {
+    this->localIP.fromString(this->netInfo.ip);
+    this->gateway.fromString(this->netInfo.gateway);
+    this->subnet.fromString(this->netInfo.subnet);
+	if (!WiFi.config(this->localIP, this->gateway, this->subnet)) {
 		Serial.println("STA Failed to configure");
 	}   
 
@@ -209,7 +208,7 @@ void ServerManager::init() {
     unsigned long currentMillis = millis();
     previousMillis = currentMillis;
 
-    Serial.println("attempting to connect to: " + this->localIP->toString());
+    Serial.println("attempting to connect to: " + this->localIP.toString());
 
     while(WiFi.status() != WL_CONNECTED) {
 
@@ -272,10 +271,11 @@ void ServerManager::handleReceivedCredentials(AsyncWebServerRequest *request){
     strcpy(this->netInfo.ip, request->getParam(2)->value().c_str());
     //gateway address
     strcpy(this->netInfo.gateway, request->getParam(3)->value().c_str());
+    //subnet mask
+    strcpy(this->netInfo.subnet, request->getParam(4)->value().c_str());
 
     EEPROMManager::writeWifiCredentials(this->netInfo);
 
-    //this looks like shit
     request->send(200, "text/html", "<h1>Done. ESP will restart, connect to your router and go to IP address: 192.168.2.200");
 
     delay(1000);
@@ -284,9 +284,9 @@ void ServerManager::handleReceivedCredentials(AsyncWebServerRequest *request){
 
 ServerManager::~ServerManager(){
     
-	delete this->localIP;
-	delete this->gateway;
-	delete this->subnet;
+	//delete this->localIP;
+	//delete this->gateway;
+	//delete this->subnet;
 
     WiFi.disconnect();
     this->end();
