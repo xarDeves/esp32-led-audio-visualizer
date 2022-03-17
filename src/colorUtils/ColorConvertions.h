@@ -110,7 +110,6 @@ namespace ColorConvertions {
 	}
 
 	static void LABtoRGB(struct Colors::ABSTRACT& lab, struct Colors::RGB& rgb) {
-
 		float X, Y, Z, fX, fY, fZ;
 		int RR, GG, BB;
 

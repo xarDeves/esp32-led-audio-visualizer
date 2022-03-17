@@ -28,6 +28,7 @@ void setup(){
 }
 
 void loop() {
+	
 	//read analog inputs (free core ?)
 	if (fftMode)engine->executeCycle();
 	ledStripManager->emitToLedStrip(clrRGB);

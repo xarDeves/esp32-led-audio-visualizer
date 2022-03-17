@@ -212,8 +212,10 @@ void ServerManager::init() {
     Serial.println("attempting to connect to: " + this->localIP->toString());
 
     while(WiFi.status() != WL_CONNECTED) {
+
         currentMillis = millis();
         if (currentMillis - previousMillis >= interval) {
+
             Serial.println("Failed to connect.");
             WiFi.disconnect();
             this->initAccessPoint();
@@ -239,6 +241,7 @@ void ServerManager::init() {
 //}
 
 void ServerManager::handleReceivedColors(AsyncWebServerRequest *request){
+
 	*this->fftMode = false;
 
 	this->clrRGB->r = (unsigned char)request->getParam(0)->value().toInt();
@@ -249,27 +252,26 @@ void ServerManager::handleReceivedColors(AsyncWebServerRequest *request){
 }
 
 void ServerManager::handleFftPressed(AsyncWebServerRequest *request){
+
  	*this->fftMode = true;
 	request->send(200, "text/html");
 }
 
 void ServerManager::handleHomePageAccessPoint(AsyncWebServerRequest *request){
+
     request->send(200, "text/html", this->accessPointIndex);
 }
 
 void ServerManager::handleReceivedCredentials(AsyncWebServerRequest *request){
+
     //SSID
     strcpy(this->netInfo.ssid, request->getParam(0)->value().c_str());
-    //this->netInfo.ssid = request->getParam(0)->value().c_str();
     //password
     strcpy(this->netInfo.pass, request->getParam(1)->value().c_str());
-    //this->netInfo.pass = request->getParam(1)->value().c_str();
     //ip address
     strcpy(this->netInfo.ip, request->getParam(2)->value().c_str());
-    //this->netInfo.ip = request->getParam(2)->value().c_str();
     //gateway address
     strcpy(this->netInfo.gateway, request->getParam(3)->value().c_str());
-    //this->netInfo.gateway = request->getParam(3)->value().c_str();
 
     EEPROMManager::writeWifiCredentials(this->netInfo);
 
@@ -281,7 +283,7 @@ void ServerManager::handleReceivedCredentials(AsyncWebServerRequest *request){
 }
 
 ServerManager::~ServerManager(){
-
+    
 	delete this->localIP;
 	delete this->gateway;
 	delete this->subnet;
