@@ -12,4 +12,4 @@ namespace NetInfo{
         char subnet[14];
     };
 
-};
+}
