@@ -1,3 +1,5 @@
 .pio
+.vscode
+.platformio.ini
 .clang_complete
 .gcc-flags.json

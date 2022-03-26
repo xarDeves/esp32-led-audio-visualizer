@@ -39,20 +39,18 @@
 class Engine{
 
 public:
-	Engine(
-		ColorModes mode,
-		Colors::RGB &clrRGB,
-		Colors::ABSTRACT &clrAbstract);
+	Engine(ColorModes mode, Colors::RGB &clrRGB);
 
 	void executeCycle();
+	void setMode(ColorModes mode);
 
 private:
 	arduinoFFT *FFT;
 
 	void (Engine::*processAudioData)();
 
+	Colors::ABSTRACT clrAbstract;
 	Colors::RGB *clrRGB;
-	Colors::ABSTRACT *clrAbstract;
 
 	float lowDevider;
 	float midDevider;

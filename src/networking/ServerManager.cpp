@@ -200,7 +200,7 @@ void ServerManager::init() {
 	}   
 
 	WiFi.begin(this->netInfo.ssid, this->netInfo.pass);
-	WiFi.setSleep(false);
+
 
     //10 secs
     const long interval = 10000;
@@ -268,7 +268,8 @@ void ServerManager::handleReceivedCredentials(AsyncWebServerRequest *request){
     //password
     strcpy(this->netInfo.pass, request->getParam(1)->value().c_str());
     //ip address
-    strcpy(this->netInfo.ip, request->getParam(2)->value().c_str());
+    auto ip = request->getParam(2)->value();
+    strcpy(this->netInfo.ip, ip.c_str());
     //gateway address
     strcpy(this->netInfo.gateway, request->getParam(3)->value().c_str());
     //subnet mask
@@ -276,7 +277,7 @@ void ServerManager::handleReceivedCredentials(AsyncWebServerRequest *request){
 
     EEPROMManager::writeWifiCredentials(this->netInfo);
 
-    request->send(200, "text/html", "<h1>Done. ESP will restart, connect to your router and go to IP address: 192.168.2.200");
+    request->send(200, "text/html", "<h1>Done. ESP will restart, connect to your router and go to IP address: " + ip + "</h1>");
 
     delay(1000);
     ESP.restart();
@@ -284,10 +285,6 @@ void ServerManager::handleReceivedCredentials(AsyncWebServerRequest *request){
 
 ServerManager::~ServerManager(){
     
-	//delete this->localIP;
-	//delete this->gateway;
-	//delete this->subnet;
-
     WiFi.disconnect();
     this->end();
 }

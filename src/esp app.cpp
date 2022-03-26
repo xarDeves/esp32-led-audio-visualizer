@@ -7,29 +7,24 @@
 
 #define COLOR_MODE RGB
 
-LedStripManager *ledStripManager;
-ServerManager *server;
-Engine *engine;
+bool fftMode = true;
 
-Colors::ABSTRACT clrAbstract;
 Colors::RGB clrRGB;
 
-bool fftMode = true;
+Engine engine(ColorModes::COLOR_MODE, clrRGB);
+ServerManager server(clrRGB, fftMode);
+LedStripManager ledStripManager;
 
 void setup(){
 
 	Serial.begin(115200);
 
-	engine = new Engine(ColorModes::COLOR_MODE, clrRGB, clrAbstract);
-	ledStripManager = new LedStripManager();
-	server = new ServerManager(clrRGB, fftMode);
-
-	server->init();
+	server.init();
 }
 
 void loop() {
 	
 	//read analog inputs (free core ?)
-	if (fftMode)engine->executeCycle();
-	ledStripManager->emitToLedStrip(clrRGB);
+	if (fftMode)engine.executeCycle();
+	ledStripManager.emitToLedStrip(clrRGB);
 }

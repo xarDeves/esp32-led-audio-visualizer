@@ -1,20 +1,20 @@
 #include "Engine.h"
 
-Engine::Engine(
-	ColorModes mode,
-	Colors::RGB& clrRGB,
- 	Colors::ABSTRACT& clrAbstract
-) {
+Engine::Engine(ColorModes mode,Colors::RGB& clrRGB) {
 
 	this->FFT = new arduinoFFT(vReal, vImag, SAMPLES, SAMPLING_FREQ);
 	this->clrRGB = &clrRGB;
-	this->clrAbstract = &clrAbstract;
+	this->setMode(mode);
 
 	lowDevider = log(LOW_END - LOW_START);
 	midDevider = log(MID_END - MID_START);
 	highDevider = log(HIGH_END - HIGH_START);
 
 	samplingPeriodUs = round(1000000 * (1.0 / SAMPLING_FREQ));
+
+}
+
+void Engine::setMode(ColorModes mode){
 
 	switch (mode) {
 	case RGB:
@@ -71,16 +71,16 @@ void Engine::executeFFT() {
 
 void Engine::normalizeForHSX() {
 
-	clrAbstract->a = normalize(LOW_START, LOW_END, 0.0f, 360.0f, lowDevider);
-	clrAbstract->b = normalize(MID_START, MID_END, 0.0f, 1.0f, midDevider);
-	clrAbstract->c = normalize(HIGH_START, HIGH_END, 0.0f, 1.0f, highDevider);
+	clrAbstract.a = normalize(LOW_START, LOW_END, 0.0f, 360.0f, lowDevider);
+	clrAbstract.b = normalize(MID_START, MID_END, 0.0f, 1.0f, midDevider);
+	clrAbstract.c = normalize(HIGH_START, HIGH_END, 0.0f, 1.0f, highDevider);
 }
 
 void Engine::normalizeForLAB() {
 
-	clrAbstract->a = normalize(LOW_START, LOW_END, 0.0f, 100.0f, lowDevider);
-	clrAbstract->b = normalize(MID_START, MID_END, -100.0f, 100.0f, midDevider);
-	clrAbstract->c = normalize(HIGH_START, HIGH_END, -100.0f, 100.0f, highDevider);
+	clrAbstract.a = normalize(LOW_START, LOW_END, 0.0f, 100.0f, lowDevider);
+	clrAbstract.b = normalize(MID_START, MID_END, -100.0f, 100.0f, midDevider);
+	clrAbstract.c = normalize(HIGH_START, HIGH_END, -100.0f, 100.0f, highDevider);
 
 	//Serial.printf("%d - %d - %d\n", clrLAB->l, clrLAB->a, clrLAB->b);
 }
@@ -106,17 +106,17 @@ void Engine::toHSL() {
 	//clrHSX->s = (clrHSX->h * 0.25f + clrHSX->s * 0.5f + clrHSX->x * 0.25f);
 	//clrHSX->x = (clrHSX->h * 0.25f + clrHSX->s * 0.4f + clrHSX->x * 0.4f);
 
-	ColorConvertions::HSLtoRGB(*clrAbstract, *clrRGB);
+	ColorConvertions::HSLtoRGB(clrAbstract, *clrRGB);
 }
 
 void Engine::toLAB() {
 
 	normalizeForLAB();
-	ColorConvertions::LABtoRGB(*clrAbstract, *clrRGB);
+	ColorConvertions::LABtoRGB(clrAbstract, *clrRGB);
 }
 
 void Engine::toHSV() {
 
 	normalizeForHSX();
-	ColorConvertions::HSVtoRGB(*clrAbstract, *clrRGB);
+	ColorConvertions::HSVtoRGB(clrAbstract, *clrRGB);
 }
