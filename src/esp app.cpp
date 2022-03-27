@@ -4,6 +4,7 @@
 #include "engine/Engine.h"
 #include "ledIO/LedStripManager.h"
 #include "networking/ServerManager.h"
+//#include "analogIO/AnalogManager.h"
 
 #define COLOR_MODE RGB
 
@@ -13,6 +14,7 @@ Colors::RGB clrRGB;
 
 Engine engine(ColorModes::COLOR_MODE, clrRGB);
 ServerManager server(clrRGB, fftMode);
+//AnalogManager analogManager(clrRGB, fftMode);
 LedStripManager ledStripManager;
 
 void setup(){

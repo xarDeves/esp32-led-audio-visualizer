@@ -17,3 +17,7 @@ void LedStripManager::emitToLedStrip(struct Colors::RGB& color) {
     ledcWrite(G_CH, (int)color.g);
     ledcWrite(B_CH, (int)color.b);
 }
+
+void LedStripManager::emitNoise(){
+
+}

@@ -21,4 +21,5 @@ public:
 	LedStripManager();
 
 	void emitToLedStrip(struct Colors::RGB &color);
+	void emitNoise();
 };
