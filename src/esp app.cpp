@@ -4,17 +4,17 @@
 #include "engine/Engine.h"
 #include "ledIO/LedStripManager.h"
 #include "networking/ServerManager.h"
-//#include "analogIO/AnalogManager.h"
+#include "analogIO/AnalogManager.h"
 
 #define COLOR_MODE RGB
 
-bool fftMode = true;
+bool fftMode = false;
 
 Colors::RGB clrRGB;
 
 Engine engine(ColorModes::COLOR_MODE, clrRGB);
 ServerManager server(clrRGB, fftMode);
-//AnalogManager analogManager(clrRGB, fftMode);
+AnalogManager analogManager(clrRGB, fftMode);
 LedStripManager ledStripManager;
 
 void setup(){
@@ -25,8 +25,8 @@ void setup(){
 }
 
 void loop() {
-	
-	//read analog inputs (free core ?)
+
 	if (fftMode)engine.executeCycle();
+	//else analogManager.readAnalog();
 	ledStripManager.emitToLedStrip(clrRGB);
 }

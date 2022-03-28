@@ -11,7 +11,7 @@ LedStripManager::LedStripManager(){
     ledcAttachPin(B_PIN, B_CH);
 }
 
-void LedStripManager::emitToLedStrip(struct Colors::RGB& color) {
+void LedStripManager::emitToLedStrip(Colors::RGB& color) {
 
     ledcWrite(R_CH, (int)color.r);
     ledcWrite(G_CH, (int)color.g);

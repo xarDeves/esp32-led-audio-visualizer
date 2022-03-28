@@ -1,6 +1,6 @@
 #include "Engine.h"
 
-Engine::Engine(ColorModes mode,Colors::RGB& clrRGB) {
+Engine::Engine(ColorModes mode, Colors::RGB &clrRGB) {
 
 	this->FFT = new arduinoFFT(vReal, vImag, SAMPLES, SAMPLING_FREQ);
 	this->clrRGB = &clrRGB;

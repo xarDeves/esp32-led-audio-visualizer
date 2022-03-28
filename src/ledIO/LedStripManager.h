@@ -20,6 +20,6 @@ class LedStripManager{
 public:
 	LedStripManager();
 
-	void emitToLedStrip(struct Colors::RGB &color);
+	void emitToLedStrip(Colors::RGB &color);
 	void emitNoise();
 };
