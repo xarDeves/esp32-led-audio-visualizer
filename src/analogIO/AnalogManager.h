@@ -2,8 +2,9 @@
 
 #include <Arduino.h>
 #include "colorUtils/Colors.h"
+#include "HystFilter.h"
 
-#define FILTER_LEN 15
+#define FILTER_LEN 40
 
 #define R_ANALOG_PIN 32 //GPIO 33
 #define G_ANALOG_PIN 33 //GPIO 32
@@ -22,23 +23,18 @@ private:
 	bool *fftMode;
     Colors::RGB *clrRGB;
 
-    unsigned char rPotBuffer[FILTER_LEN] = {0};
-    unsigned char gPotBuffer[FILTER_LEN] = {0};
-    unsigned char bPotBuffer[FILTER_LEN] = {0};
-
-    unsigned char rPotBufferCount = 0;
-    unsigned char gPotBufferCount = 0;
-    unsigned char bPotBufferCount = 0;
+    HystFilter potRNorm;
+    HystFilter potGNorm;
+    HystFilter potBNorm;
 
     unsigned char newR = 0;
     unsigned char newG = 0;
     unsigned char newB = 0;
-    
+
     unsigned char prevR = 0;
     unsigned char prevG = 0;
     unsigned char prevB = 0;
 
     void readPotentiometers();
     void readButtons();
-    int interpolateADC(int raw, unsigned char *buff, unsigned char &buffCounter);
 };

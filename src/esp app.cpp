@@ -27,6 +27,6 @@ void setup(){
 void loop() {
 
 	if (fftMode)engine.executeCycle();
-	//else analogManager.readAnalog();
+    //else analogManager.readAnalog();
 	ledStripManager.emitToLedStrip(clrRGB);
 }

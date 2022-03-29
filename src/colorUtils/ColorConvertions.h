@@ -24,7 +24,7 @@ namespace ColorConvertions {
 		return v1;
 	}
 
-	static void HSVtoRGB(struct Colors::ABSTRACT& hsx, struct Colors::RGB& rgb) {
+	static void HSVtoRGB(Colors::ABSTRACT &hsx, Colors::RGB &rgb) {
 
 		double r = 0, g = 0, b = 0;
 
@@ -93,7 +93,7 @@ namespace ColorConvertions {
 		rgb.b = b * 255;
 	}
 
-	static void HSLtoRGB(struct Colors::ABSTRACT& hsx, struct Colors::RGB& rgb) {
+	static void HSLtoRGB(Colors::ABSTRACT &hsx, Colors::RGB &rgb) {
 
 		if (hsx.b == 0) rgb.r = rgb.g = rgb.b = (unsigned char)(hsx.c * 255);
 		else {
@@ -109,7 +109,7 @@ namespace ColorConvertions {
 		}
 	}
 
-	static void LABtoRGB(struct Colors::ABSTRACT& lab, struct Colors::RGB& rgb) {
+	static void LABtoRGB(Colors::ABSTRACT &lab, Colors::RGB &rgb) {
 		float X, Y, Z, fX, fY, fZ;
 		int RR, GG, BB;
 
