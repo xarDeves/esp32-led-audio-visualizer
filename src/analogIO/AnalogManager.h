@@ -2,9 +2,10 @@
 
 #include <Arduino.h>
 #include "colorUtils/Colors.h"
-#include "HystFilter.h"
+#include "filter/DeviationFilter.h"
 
-#define FILTER_LEN 40
+#define BUFF_LEN 200
+#define DEVIATION_MAX 30
 
 #define R_ANALOG_PIN 32 //GPIO 33
 #define G_ANALOG_PIN 33 //GPIO 32
@@ -15,7 +16,7 @@ class AnalogManager{
 public:
     AnalogManager(Colors::RGB &clrRGB, bool &fftMode);
 
-    void readAnalog();
+    void read();
 
     ~AnalogManager();
     
@@ -23,17 +24,9 @@ private:
 	bool *fftMode;
     Colors::RGB *clrRGB;
 
-    HystFilter potRNorm;
-    HystFilter potGNorm;
-    HystFilter potBNorm;
-
-    unsigned char newR = 0;
-    unsigned char newG = 0;
-    unsigned char newB = 0;
-
-    unsigned char prevR = 0;
-    unsigned char prevG = 0;
-    unsigned char prevB = 0;
+    DeviationFilter rPotFilter;
+    DeviationFilter gPotFilter;
+    DeviationFilter bPotFilter;
 
     void readPotentiometers();
     void readButtons();
