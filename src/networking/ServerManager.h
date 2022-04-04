@@ -3,7 +3,7 @@
 #include "colorUtils/Colors.h"
 #include <ESPAsyncWebServer.h>
 #include "persistence/EEPROMManager.h"
-#include "networking/NetInfo.h"
+#include "persistence/NetInfo.h"
 #include <WiFi.h>
 
 #define ACCESS_POINT_SSID "Led Visualiser"
@@ -11,7 +11,7 @@
 class ServerManager : public AsyncWebServer{
 
 public:
-	ServerManager(struct Colors::RGB &clrRGB, bool &fftMode);
+	ServerManager(Colors::RGB &clrRGB, bool &fftMode);
 
 	Colors::RGB *clrRGB;
 

@@ -3,7 +3,6 @@
 namespace NetInfo{
 
 	struct info{
-        static const unsigned char size = 170;
 
         char ssid[64];
         char pass[64];

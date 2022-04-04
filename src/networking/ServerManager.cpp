@@ -1,11 +1,11 @@
 #include "networking/ServerManager.h"
 
-ServerManager::ServerManager(struct Colors::RGB& clrRGB, bool& fftMode) : AsyncWebServer(80){
+ServerManager::ServerManager(Colors::RGB& clrRGB, bool& fftMode) : AsyncWebServer(80){
 
 	this->clrRGB = &clrRGB;
 	this->fftMode = &fftMode;
 
-	this->staticIndex = R"(<html>
+	staticIndex = R"(<html>
 
 <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 
@@ -77,7 +77,7 @@ ServerManager::ServerManager(struct Colors::RGB& clrRGB, bool& fftMode) : AsyncW
 
 </html>)";
 
-    this->accessPointIndex = R"(<!DOCTYPE html>
+    accessPointIndex = R"(<!DOCTYPE html>
 <html>
 
 <head>
@@ -173,34 +173,33 @@ void ServerManager::initAccessPoint() {
 
     WiFi.softAP(ACCESS_POINT_SSID);
 
-    this->on("/", HTTP_GET, std::bind(&ServerManager::handleHomePageAccessPoint, this, std::placeholders::_1));
-    this->on("/submit", HTTP_POST, std::bind(&ServerManager::handleReceivedCredentials, this, std::placeholders::_1));
+    on("/", HTTP_GET, std::bind(&ServerManager::handleHomePageAccessPoint, this, std::placeholders::_1));
+    on("/submit", HTTP_POST, std::bind(&ServerManager::handleReceivedCredentials, this, std::placeholders::_1));
 
-    this->begin();
+    begin();
 
     Serial.println("access point initialized");
 }
 
 void ServerManager::init() {
 
-    EEPROMManager::readWifiCredentials(this->netInfo);
+    EEPROMManager::readWifiCredentials(netInfo);
 
-    if (this->netInfo.ssid[0] == '\0' || this->netInfo.ip[0] == '\0'  || this->netInfo.gateway[0] == '\0' ){
-        this->initAccessPoint();
+    if (netInfo.ssid[0] == '\0' || netInfo.ip[0] == '\0'  || netInfo.gateway[0] == '\0' ){
+        initAccessPoint();
         return;
     }
 
     WiFi.mode(WIFI_STA);
 
-    this->localIP.fromString(this->netInfo.ip);
-    this->gateway.fromString(this->netInfo.gateway);
-    this->subnet.fromString(this->netInfo.subnet);
-	if (!WiFi.config(this->localIP, this->gateway, this->subnet)) {
+    localIP.fromString(netInfo.ip);
+    gateway.fromString(netInfo.gateway);
+    subnet.fromString(netInfo.subnet);
+	if (!WiFi.config(localIP, gateway, subnet)) {
 		Serial.println("STA Failed to configure");
 	}   
 
-	WiFi.begin(this->netInfo.ssid, this->netInfo.pass);
-
+	WiFi.begin(netInfo.ssid, netInfo.pass);
 
     //10 secs
     const long interval = 10000;
@@ -208,7 +207,7 @@ void ServerManager::init() {
     unsigned long currentMillis = millis();
     previousMillis = currentMillis;
 
-    Serial.println("attempting to connect to: " + this->localIP.toString());
+    Serial.println("attempting to connect to: " + localIP.toString());
 
     while(WiFi.status() != WL_CONNECTED) {
 
@@ -217,7 +216,7 @@ void ServerManager::init() {
 
             Serial.println("Failed to connect.");
             WiFi.disconnect();
-            this->initAccessPoint();
+            initAccessPoint();
             return;
         }
     }
@@ -227,55 +226,55 @@ void ServerManager::init() {
 	Serial.print("Got IP: ");
 	Serial.println(WiFi.localIP());
     
-	//this->on("/", HTTP_GET, std::bind(&ServerManager::handleHomePageStatic, this, std::placeholders::_1));
-	this->on("/colorChanged", HTTP_POST, std::bind(&ServerManager::handleReceivedColors, this, std::placeholders::_1));
-	this->on("/FFTPressed", HTTP_POST, std::bind(&ServerManager::handleFftPressed, this, std::placeholders::_1));
+	//on("/", HTTP_GET, std::bind(&ServerManager::handleHomePageStatic, this, std::placeholders::_1));
+	on("/colorChanged", HTTP_POST, std::bind(&ServerManager::handleReceivedColors, this, std::placeholders::_1));
+	on("/FFTPressed", HTTP_POST, std::bind(&ServerManager::handleFftPressed, this, std::placeholders::_1));
 
-	this->begin();
+	begin();
 	Serial.println("HTTP server started");
 }
 
 //void ServerManager::handleHomePageStatic(AsyncWebServerRequest *request){
-//        request->send(200, "text/html", this->staticIndex);
+//        request->send(200, "text/html", staticIndex);
 //}
 
 void ServerManager::handleReceivedColors(AsyncWebServerRequest *request){
 
-	*this->fftMode = false;
+	*fftMode = false;
 
-	this->clrRGB->r = (unsigned char)request->getParam(0)->value().toInt();
-	this->clrRGB->g = (unsigned char)request->getParam(1)->value().toInt();
-	this->clrRGB->b = (unsigned char)request->getParam(2)->value().toInt();
+	clrRGB->r = (unsigned char)request->getParam(0)->value().toInt();
+	clrRGB->g = (unsigned char)request->getParam(1)->value().toInt();
+	clrRGB->b = (unsigned char)request->getParam(2)->value().toInt();
 
 	request->send(200, "text/html");
 }
 
 void ServerManager::handleFftPressed(AsyncWebServerRequest *request){
 
- 	*this->fftMode = true;
+ 	*fftMode = true;
 	request->send(200, "text/html");
 }
 
 void ServerManager::handleHomePageAccessPoint(AsyncWebServerRequest *request){
 
-    request->send(200, "text/html", this->accessPointIndex);
+    request->send(200, "text/html", accessPointIndex);
 }
 
 void ServerManager::handleReceivedCredentials(AsyncWebServerRequest *request){
 
     //SSID
-    strcpy(this->netInfo.ssid, request->getParam(0)->value().c_str());
+    strcpy(netInfo.ssid, request->getParam(0)->value().c_str());
     //password
-    strcpy(this->netInfo.pass, request->getParam(1)->value().c_str());
+    strcpy(netInfo.pass, request->getParam(1)->value().c_str());
     //ip address
     auto ip = request->getParam(2)->value();
-    strcpy(this->netInfo.ip, ip.c_str());
+    strcpy(netInfo.ip, ip.c_str());
     //gateway address
-    strcpy(this->netInfo.gateway, request->getParam(3)->value().c_str());
+    strcpy(netInfo.gateway, request->getParam(3)->value().c_str());
     //subnet mask
-    strcpy(this->netInfo.subnet, request->getParam(4)->value().c_str());
+    strcpy(netInfo.subnet, request->getParam(4)->value().c_str());
 
-    EEPROMManager::writeWifiCredentials(this->netInfo);
+    EEPROMManager::writeWifiCredentials(netInfo);
 
     request->send(200, "text/html", "<h1>Done. ESP will restart, connect to your router and go to IP address: " + ip + "</h1>");
 
@@ -286,5 +285,5 @@ void ServerManager::handleReceivedCredentials(AsyncWebServerRequest *request){
 ServerManager::~ServerManager(){
     
     WiFi.disconnect();
-    this->end();
+    end();
 }
