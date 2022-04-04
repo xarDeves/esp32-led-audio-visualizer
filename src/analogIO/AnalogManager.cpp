@@ -1,7 +1,7 @@
 #include "AnalogManager.h"
 
 AnalogManager::AnalogManager(Colors::RGB &clrRGB, bool &fftMode)
- : rPotFilter(BUFF_LEN), gPotFilter(BUFF_LEN), bPotFilter(BUFF_LEN){
+ : pot1Filter(BUFF_LEN), pot2Filter(BUFF_LEN), pot3Filter(BUFF_LEN){
 
     this->clrRGB = &clrRGB;
     this->fftMode = &fftMode;
@@ -9,25 +9,40 @@ AnalogManager::AnalogManager(Colors::RGB &clrRGB, bool &fftMode)
 
 void AnalogManager::read(){
 
-    this->readPotentiometers();
-    this->readButtons();
+    readButtons();
+    readPotentiometers();
 }
 
 void AnalogManager::readPotentiometers(){
 
-    unsigned short rRaw = analogRead(R_ANALOG_PIN);
-    unsigned short gRaw = analogRead(G_ANALOG_PIN);
-    unsigned short bRaw = analogRead(B_ANALOG_PIN);
+    raw1 = analogRead(PIN_1);
+    raw2 = analogRead(PIN_2);
+    raw3 = analogRead(PIN_3);
 
-    if (rPotFilter.deviate(rRaw) > DEVIATION_MAX || 
-        gPotFilter.deviate(gRaw) > DEVIATION_MAX || 
-        bPotFilter.deviate(bRaw) > DEVIATION_MAX){
-
-        this->clrRGB->r = map(rRaw, 0, 4095, 0 ,255);
-        this->clrRGB->g = map(gRaw, 0, 4095, 0 ,255);
-        this->clrRGB->b = map(bRaw, 0, 4095, 0 ,255);
+    if (inputEligible()){
+        if(*fftMode) changeBands();
+        else changeColors();
     }
-    
+
+}
+
+inline bool AnalogManager::inputEligible(){
+
+    if (pot1Filter.deviate(raw1) > DEVIATION_MAX || 
+        pot2Filter.deviate(raw2) > DEVIATION_MAX || 
+        pot3Filter.deviate(raw3) > DEVIATION_MAX) return true;
+    return false;
+}
+
+inline void AnalogManager::changeBands(){
+
+}
+
+inline void AnalogManager::changeColors(){
+
+    clrRGB->r = map(raw1, 0, 4095, 0 ,255);
+    clrRGB->g = map(raw2, 0, 4095, 0 ,255);
+    clrRGB->b = map(raw3, 0, 4095, 0 ,255);
 }
 
 void AnalogManager::readButtons(){}

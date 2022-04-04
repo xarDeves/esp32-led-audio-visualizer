@@ -20,6 +20,6 @@ class LedStripManager{
 public:
 	LedStripManager();
 
-	void emitToLedStrip(Colors::RGB &color);
+	void emit(Colors::RGB &color);
 	void emitNoise();
 };

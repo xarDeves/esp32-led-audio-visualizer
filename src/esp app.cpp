@@ -8,11 +8,11 @@
 
 #define COLOR_MODE RGB
 
-bool fftMode = false;
+bool fftMode = true;
 
 Colors::RGB clrRGB;
 
-Engine engine(ColorModes::COLOR_MODE, clrRGB);
+Engine engine(clrRGB, ColorModes::COLOR_MODE);
 ServerManager server(clrRGB, fftMode);
 AnalogManager analogManager(clrRGB, fftMode);
 LedStripManager ledStripManager;
@@ -26,7 +26,13 @@ void setup(){
 
 void loop() {
 
+    //unsigned long start = micros();
+
 	if (fftMode)engine.executeCycle();
     else analogManager.read();
-	ledStripManager.emitToLedStrip(clrRGB);
+	ledStripManager.emit(clrRGB);
+
+    //unsigned long end = micros();
+    //unsigned long delta = end - start;
+    //Serial.println(delta);
 }

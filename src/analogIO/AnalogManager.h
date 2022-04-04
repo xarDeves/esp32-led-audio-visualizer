@@ -7,9 +7,9 @@
 #define BUFF_LEN 200
 #define DEVIATION_MAX 30
 
-#define R_ANALOG_PIN 32 //GPIO 33
-#define G_ANALOG_PIN 33 //GPIO 32
-#define B_ANALOG_PIN 35 //GPIO 35
+#define PIN_1 33
+#define PIN_2 32
+#define PIN_3 35
 
 class AnalogManager{
 
@@ -24,10 +24,18 @@ private:
 	bool *fftMode;
     Colors::RGB *clrRGB;
 
-    DeviationFilter rPotFilter;
-    DeviationFilter gPotFilter;
-    DeviationFilter bPotFilter;
+    unsigned short raw1;
+    unsigned short raw2;
+    unsigned short raw3;
+
+    DeviationFilter pot1Filter;
+    DeviationFilter pot2Filter;
+    DeviationFilter pot3Filter;
 
     void readPotentiometers();
     void readButtons();
+
+    bool inputEligible();
+    void changeColors();
+    void changeBands();
 };
