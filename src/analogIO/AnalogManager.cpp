@@ -1,10 +1,10 @@
 #include "AnalogManager.h"
 
-AnalogManager::AnalogManager(Colors::RGB &clrRGB, bool &fftMode)
+AnalogManager::AnalogManager(Model &model, Controller &controller)
  : pot1Filter(BUFF_LEN), pot2Filter(BUFF_LEN), pot3Filter(BUFF_LEN){
 
-    this->clrRGB = &clrRGB;
-    this->fftMode = &fftMode;
+    this->model = &model;
+    this->controller = &controller;
 }
 
 void AnalogManager::read(){
@@ -19,11 +19,20 @@ void AnalogManager::readPotentiometers(){
     raw2 = analogRead(PIN_2);
     raw3 = analogRead(PIN_3);
 
-    if (inputEligible()){
-        if(*fftMode) changeBands();
-        else changeColors();
+    //READ AND SET FFT BUTTON
+    if (model->fftMode) {
+        controller->FFTOn();
     }
+    else {
+        controller->FFTOff();
+    }
+}
 
+inline void AnalogManager::mapRaw(){
+
+    raw1 = map(raw1, 0, 4095, 0 ,255);
+    raw2 = map(raw2, 0, 4095, 0 ,255);
+    raw3 = map(raw3, 0, 4095, 0 ,255);
 }
 
 inline bool AnalogManager::inputEligible(){
@@ -34,15 +43,36 @@ inline bool AnalogManager::inputEligible(){
     return false;
 }
 
-inline void AnalogManager::changeBands(){
+void AnalogManager::assignColors(){
 
+        model->clrRGB.r = raw1;
+        model->clrRGB.g = raw2;
+        model->clrRGB.b = raw3;
 }
 
-inline void AnalogManager::changeColors(){
+void AnalogManager::assignBufferLens(){
+    
+    model->engineInfo.rSmoothingLen = (unsigned char)raw1;
+    model->engineInfo.gSmoothingLen = (unsigned char)raw2;
+    model->engineInfo.bSmoothingLen = (unsigned char)raw3;
+}
 
-    clrRGB->r = map(raw1, 0, 4095, 0 ,255);
-    clrRGB->g = map(raw2, 0, 4095, 0 ,255);
-    clrRGB->b = map(raw3, 0, 4095, 0 ,255);
+void AnalogManager::pollSmoothingValues(){
+
+    if (inputEligible()){
+        mapRaw();
+        assignBufferLens();
+        controller->smoothingChanged();
+    }
+}
+
+void AnalogManager::pollColorValues(){
+
+    if (inputEligible()){
+        mapRaw();
+        assignColors();
+        controller->colorChanged();
+    }
 }
 
 void AnalogManager::readButtons(){}

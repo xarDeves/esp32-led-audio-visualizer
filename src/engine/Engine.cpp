@@ -1,9 +1,15 @@
 #include "Engine.h"
 
-Engine::Engine(Colors::RGB &clrRGB, ColorModes mode) {
+Engine::Engine(Model &model, ColorModes mode, Controller &controller) :
+rSmoother(model.engineInfo.rSmoothingLen), 
+gSmoother(model.engineInfo.gSmoothingLen), 
+bSmoother(model.engineInfo.bSmoothingLen){
 
 	FFT = new arduinoFFT(vReal, vImag, SAMPLES, SAMPLING_FREQ);
-	this->clrRGB = &clrRGB;
+
+    this->controller = &controller;
+    this->model = &model;
+
 	setMode(mode);
 
     computeDeviders();
@@ -34,18 +40,7 @@ void Engine::executeCycle() {
 	readAudioData();
 	executeFFT();
 	(this->*processAudioData)();
-}
-
-inline double Engine::normalize(int _start, int _end, float tMin, float tMax, float devider) {
-
-	double sum = 0.0f;
-
-	for (int i = _start; i < _end; i++) {
-		if (vReal[i] > engineInfo.noise)
-			sum += vReal[i];
-	}
-
-	return tMax * ((sum / devider) - engineInfo.noise) / (engineInfo.rMax - engineInfo.noise);
+    controller->colorChanged();
 }
 
 void Engine::readAudioData() {
@@ -66,59 +61,82 @@ void Engine::executeFFT() {
 	FFT->ComplexToMagnitude();
 }
 
-void Engine::normalizeForHSX() {
+inline double Engine::normalize(int _start, int _end, float tMin, float tMax, float devider) {
 
-	clrAbstract.a = normalize(engineInfo.lowStart, engineInfo.lowEnd, 0.0f, 360.0f, lowDevider);
-	clrAbstract.b = normalize(engineInfo.midStart, engineInfo.midEnd, 0.0f, 1.0f, midDevider);
-	clrAbstract.c = normalize(engineInfo.highStart, engineInfo.highEnd, 0.0f, 1.0f, highDevider);
+	double sum = 0.0f;
+
+	for (int i = _start; i < _end; i++) {
+		if (vReal[i] > model->engineInfo.noise)
+			sum += vReal[i];
+	}
+
+	return tMax * ((sum / devider) - model->engineInfo.noise) / (model->engineInfo.rMax - model->engineInfo.noise);
 }
 
-void Engine::normalizeForLAB() {
+void Engine::modifySmoothers(){
 
-	clrAbstract.a = normalize(engineInfo.lowStart, engineInfo.lowEnd, 0.0f, 100.0f, lowDevider);
-	clrAbstract.b = normalize(engineInfo.midStart, engineInfo.midEnd, -100.0f, 100.0f, midDevider);
-	clrAbstract.c = normalize(engineInfo.highStart, engineInfo.highEnd, -100.0f, 100.0f, highDevider);
-
-	//Serial.printf("%d - %d - %d\n", clrLAB->l, clrLAB->a, clrLAB->b);
+    rSmoother.setLen(model->engineInfo.rSmoothingLen);
+    gSmoother.setLen(model->engineInfo.gSmoothingLen);
+    bSmoother.setLen(model->engineInfo.bSmoothingLen);
 }
 
 void Engine::toRGB() {
 
-	clrRGB->r = normalize(engineInfo.lowStart, engineInfo.lowEnd, 0.0f, 255.0f, lowDevider);
-	clrRGB->g = normalize(engineInfo.midStart, engineInfo.midEnd, 0.0f, 255.0f, midDevider);
-	clrRGB->b = normalize(engineInfo.highStart, engineInfo.highEnd, 0.0f, 255.0f, highDevider);
+    model->clrRGB.r = normalize(model->engineInfo.lowStart, model->engineInfo.lowEnd, 0.0f, 255.0f, lowDevider);
+    model->clrRGB.g = normalize(model->engineInfo.midStart, model->engineInfo.midEnd, 0.0f, 255.0f, midDevider);
+    model->clrRGB.b = normalize(model->engineInfo.highStart, model->engineInfo.highEnd, 0.0f, 255.0f, highDevider);
+
+    rSmoother.smooth(model->clrRGB.r);
+    gSmoother.smooth(model->clrRGB.g); 
+    bSmoother.smooth(model->clrRGB.b);
 }
 
 void Engine::toHSL() {
 
 	normalizeForHSX();
-	ColorConvertions::HSLtoRGB(clrAbstract, *clrRGB);
+	ColorConvertions::HSLtoRGB(clrAbstract, model->clrRGB);
 }
 
 void Engine::toLAB() {
 
 	normalizeForLAB();
-	ColorConvertions::LABtoRGB(clrAbstract, *clrRGB);
+	ColorConvertions::LABtoRGB(clrAbstract, model->clrRGB);
 }
 
 void Engine::toHSV() {
 
 	normalizeForHSX();
-	ColorConvertions::HSVtoRGB(clrAbstract, *clrRGB);
+	ColorConvertions::HSVtoRGB(clrAbstract, model->clrRGB);
+}
+
+void Engine::normalizeForHSX() {
+
+	clrAbstract.a = normalize(model->engineInfo.lowStart, model->engineInfo.lowEnd, 0.0f, 360.0f, lowDevider);
+	clrAbstract.b = normalize(model->engineInfo.midStart, model->engineInfo.midEnd, 0.0f, 1.0f, midDevider);
+	clrAbstract.c = normalize(model->engineInfo.highStart, model->engineInfo.highEnd, 0.0f, 1.0f, highDevider);
+}
+
+void Engine::normalizeForLAB() {
+
+	clrAbstract.a = normalize(model->engineInfo.lowStart, model->engineInfo.lowEnd, 0.0f, 100.0f, lowDevider);
+	clrAbstract.b = normalize(model->engineInfo.midStart, model->engineInfo.midEnd, -100.0f, 100.0f, midDevider);
+	clrAbstract.c = normalize(model->engineInfo.highStart, model->engineInfo.highEnd, -100.0f, 100.0f, highDevider);
+
+	//Serial.printf("%d - %d - %d\n", clrLAB->l, clrLAB->a, clrLAB->b);
 }
 
 void Engine::computeDeviders(){
 
-    //EEPROMManager::readEngineInfo(engineInfo);
+    //EEPROMManager::readmodel->engineInfo(model->engineInfo);
     
-    /*Serial.println(engineInfo.lowStart);
-    Serial.println(engineInfo.lowEnd);
-    Serial.println(engineInfo.midStart);
-    Serial.println(engineInfo.midEnd);
-    Serial.println(engineInfo.highStart);
-    Serial.println(engineInfo.highEnd);*/
+    /*Serial.println(model->engineInfo.lowStart);
+    Serial.println(model->engineInfo.lowEnd);
+    Serial.println(model->engineInfo.midStart);
+    Serial.println(model->engineInfo.midEnd);
+    Serial.println(model->engineInfo.highStart);
+    Serial.println(model->engineInfo.highEnd);*/
 
-	lowDevider = log(engineInfo.lowEnd - engineInfo.lowStart);
-	midDevider = log(engineInfo.midEnd - engineInfo.midStart);
-	highDevider = log(engineInfo.highEnd - engineInfo.highStart);
+	lowDevider = log(model->engineInfo.lowEnd - model->engineInfo.lowStart);
+	midDevider = log(model->engineInfo.midEnd - model->engineInfo.midStart);
+	highDevider = log(model->engineInfo.highEnd - model->engineInfo.highStart);
 }

@@ -1,17 +1,20 @@
 #pragma once
 
-#include "colorUtils/Colors.h"
+#include <WiFi.h>
 #include <ESPAsyncWebServer.h>
 #include "persistence/EEPROMManager.h"
 #include "persistence/NetInfo.h"
-#include <WiFi.h>
+#include "controller/Controller.h"
+#include "model/Model.h"
 
 #define ACCESS_POINT_SSID "Led Visualiser"
+
+class Controller;
 
 class ServerManager : public AsyncWebServer{
 
 public:
-	ServerManager(Colors::RGB &clrRGB, bool &fftMode);
+	ServerManager(Model &model, Controller &controller);
 
 	Colors::RGB *clrRGB;
 
@@ -20,6 +23,9 @@ public:
 	~ServerManager();
 
 private:
+    Controller *controller;
+    Model *model;
+
 	IPAddress localIP;
 	IPAddress gateway;
 	IPAddress subnet;

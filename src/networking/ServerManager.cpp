@@ -1,9 +1,9 @@
 #include "networking/ServerManager.h"
 
-ServerManager::ServerManager(Colors::RGB& clrRGB, bool& fftMode) : AsyncWebServer(80){
+ServerManager::ServerManager(Model &model, Controller &controller) : AsyncWebServer(80){
 
-	this->clrRGB = &clrRGB;
-	this->fftMode = &fftMode;
+    this->model = &model;
+    this->controller = &controller;
 
 	staticIndex = R"(<html>
 
@@ -239,20 +239,22 @@ void ServerManager::init() {
 //}
 
 void ServerManager::handleReceivedColors(AsyncWebServerRequest *request){
-
-	*fftMode = false;
-
-	clrRGB->r = (unsigned char)request->getParam(0)->value().toInt();
-	clrRGB->g = (unsigned char)request->getParam(1)->value().toInt();
-	clrRGB->b = (unsigned char)request->getParam(2)->value().toInt();
+    
+    controller->FFTOffWifi();
+    
+	model->clrRGB.r = (unsigned char)request->getParam(0)->value().toInt();
+	model->clrRGB.g = (unsigned char)request->getParam(1)->value().toInt();
+	model->clrRGB.b = (unsigned char)request->getParam(2)->value().toInt();
 
 	request->send(200, "text/html");
+
+    controller->colorChanged();
 }
 
 void ServerManager::handleFftPressed(AsyncWebServerRequest *request){
 
- 	*fftMode = true;
 	request->send(200, "text/html");
+    controller->FFTOnWifi();
 }
 
 void ServerManager::handleHomePageAccessPoint(AsyncWebServerRequest *request){

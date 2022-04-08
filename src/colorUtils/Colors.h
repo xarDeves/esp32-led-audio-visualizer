@@ -13,16 +13,4 @@ namespace Colors{
 		float b;
 		float c;
 	};
-
-	/*struct HSX {
-		int h;
-		float s;
-		float x;
-	};
-
-	struct LAB {
-		int l;
-		int a;
-		int b;
-	};*/
-};
+}

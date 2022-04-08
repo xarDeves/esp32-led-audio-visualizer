@@ -3,9 +3,12 @@
 #include "arduinoFFT.h"
 #include "persistence/EngineInfo.h"
 #include "persistence/EEPROMManager.h"
-#include "colorUtils/Colors.h"
+#include "model/Model.h"
+#include "Smoother.h"
 #include "colorUtils/ColorConvertions.h"
+#include "colorUtils/Colors.h"
 #include "colorUtils/ColorModes.h"
+#include "controller/Controller.h"
 
 // FFT parameters
 // Must be a power of 2
@@ -14,26 +17,30 @@
 #define SAMPLING_FREQ 40000
 #define AUDIO_IN_PIN 34
 
+class Controller;
+
 class Engine{
 
 public:
-    Engine(Colors::RGB &clrRGB, ColorModes mode);
+    Engine(Model &model, ColorModes mode, Controller &controller);
 
 	void executeCycle();
 	void setMode(ColorModes mode);
+    void computeDeviders();
+    void modifySmoothers();
 
 private:
+    Controller *controller;
+    Model *model;
 	arduinoFFT *FFT;
 
-	Colors::ABSTRACT clrAbstract;
-	Colors::RGB *clrRGB;
+    Colors::ABSTRACT clrAbstract;
 
-    EngineInfo::info engineInfo;
+    Smoother rSmoother;
+    Smoother gSmoother;
+    Smoother bSmoother;
 
-	void (Engine::*processAudioData)();
-	inline double normalize(int _start, int _end, float tMin, float tMax, float devider);
-
-	unsigned int samplingPeriodUs;
+    unsigned int samplingPeriodUs;
 	unsigned long newTime;
 
 	double vReal[SAMPLES];
@@ -45,6 +52,8 @@ private:
 
 	void readAudioData();
 	void executeFFT();
+	void (Engine::*processAudioData)();
+	inline double normalize(int _start, int _end, float tMin, float tMax, float devider);
 
 	void normalizeForHSX();
 	void normalizeForLAB();
@@ -52,6 +61,4 @@ private:
 	void toHSV();
 	void toHSL();
 	void toLAB();
-
-    void computeDeviders();
 };

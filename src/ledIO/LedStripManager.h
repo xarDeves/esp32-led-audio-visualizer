@@ -1,7 +1,8 @@
 #pragma once
 
-#include "colorUtils/Colors.h"
 #include <esp32-hal-ledc.h>
+#include "colorUtils/Colors.h"
+#include "controller/Controller.h"
 
 // PWM properties
 #define FREQ 1500
@@ -15,11 +16,16 @@
 #define G_PIN 26
 #define B_PIN 25
 
+class Controller;
+
 class LedStripManager{
 
 public:
-	LedStripManager();
+	LedStripManager(Controller &controller);
 
 	void emit(Colors::RGB &color);
 	void emitNoise();
+
+private:
+    Controller *controller;
 };
