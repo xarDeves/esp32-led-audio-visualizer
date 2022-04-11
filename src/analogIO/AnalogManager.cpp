@@ -1,7 +1,7 @@
 #include "AnalogManager.h"
 
 AnalogManager::AnalogManager(Model &model, Controller &controller)
- : pot1Filter(BUFF_LEN), pot2Filter(BUFF_LEN), pot3Filter(BUFF_LEN){
+ : pot1(BUFF_LEN, PIN_1), pot2(BUFF_LEN, PIN_2), pot3(BUFF_LEN, PIN_3){
 
     this->model = &model;
     this->controller = &controller;
@@ -15,9 +15,9 @@ void AnalogManager::read(){
 
 void AnalogManager::readPotentiometers(){
 
-    raw1 = analogRead(PIN_1);
-    raw2 = analogRead(PIN_2);
-    raw3 = analogRead(PIN_3);
+    pot1.read();
+    pot2.read();
+    pot3.read();
 
     //READ AND SET FFT BUTTON
     if (model->fftMode) {
@@ -28,39 +28,31 @@ void AnalogManager::readPotentiometers(){
     }
 }
 
-inline void AnalogManager::mapRaw(){
-
-    raw1 = map(raw1, 0, 4095, 0 ,255);
-    raw2 = map(raw2, 0, 4095, 0 ,255);
-    raw3 = map(raw3, 0, 4095, 0 ,255);
-}
-
 inline bool AnalogManager::inputEligible(){
 
-    if (pot1Filter.deviate(raw1) > DEVIATION_MAX || 
-        pot2Filter.deviate(raw2) > DEVIATION_MAX || 
-        pot3Filter.deviate(raw3) > DEVIATION_MAX) return true;
+    if (pot1.deviated > DEVIATION_MAX || 
+        pot2.deviated > DEVIATION_MAX || 
+        pot3.deviated > DEVIATION_MAX) return true;
     return false;
 }
 
 void AnalogManager::assignColors(){
 
-        model->clrRGB.r = raw1;
-        model->clrRGB.g = raw2;
-        model->clrRGB.b = raw3;
+    model->clrRGB.r = pot1.mapRaw(MAP_MAX);
+    model->clrRGB.g = pot2.mapRaw(MAP_MAX);
+    model->clrRGB.b = pot3.mapRaw(MAP_MAX);
 }
 
 void AnalogManager::assignBufferLens(){
     
-    model->engineInfo.rSmoothingLen = (unsigned char)raw1;
-    model->engineInfo.gSmoothingLen = (unsigned char)raw2;
-    model->engineInfo.bSmoothingLen = (unsigned char)raw3;
+    model->engineInfo.rSmoothingLen = pot1.mapRaw(MAP_MAX);
+    model->engineInfo.gSmoothingLen = pot2.mapRaw(MAP_MAX);
+    model->engineInfo.bSmoothingLen = pot3.mapRaw(MAP_MAX);
 }
 
 void AnalogManager::pollSmoothingValues(){
 
     if (inputEligible()){
-        mapRaw();
         assignBufferLens();
         controller->smoothingChanged();
     }
@@ -69,7 +61,6 @@ void AnalogManager::pollSmoothingValues(){
 void AnalogManager::pollColorValues(){
 
     if (inputEligible()){
-        mapRaw();
         assignColors();
         controller->colorChanged();
     }

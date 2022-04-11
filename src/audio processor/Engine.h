@@ -5,9 +5,9 @@
 #include "persistence/EEPROMManager.h"
 #include "model/Model.h"
 #include "Smoother.h"
-#include "colorUtils/ColorConvertions.h"
-#include "colorUtils/Colors.h"
-#include "colorUtils/ColorModes.h"
+#include "color utils/ColorConvertions.h"
+#include "color utils/Colors.h"
+#include "color utils/ColorModes.h"
 #include "controller/Controller.h"
 
 // FFT parameters

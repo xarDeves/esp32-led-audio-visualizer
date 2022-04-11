@@ -1,12 +1,13 @@
 #pragma once
 
-#include <Arduino.h>
 #include "filter/DeviationFilter.h"
 #include "controller/Controller.h"
+#include "devices/Potentiometer.h"
 #include "model/Model.h"
 
 #define BUFF_LEN 200
 #define DEVIATION_MAX 30
+#define MAP_MAX 255
 
 #define PIN_1 33
 #define PIN_2 32
@@ -31,13 +32,9 @@ private:
     
     Model *model;
 
-    DeviationFilter pot1Filter;
-    DeviationFilter pot2Filter;
-    DeviationFilter pot3Filter;
-
-    unsigned short raw1;
-    unsigned short raw2;
-    unsigned short raw3;
+    Potentiometer pot1;
+    Potentiometer pot2;
+    Potentiometer pot3;
 
     void readPotentiometers();
     void readButtons();
@@ -46,6 +43,4 @@ private:
 
     void assignBufferLens();
     void assignColors();
-
-    void mapRaw();
 };

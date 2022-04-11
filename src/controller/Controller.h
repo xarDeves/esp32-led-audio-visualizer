@@ -1,9 +1,9 @@
 #pragma once
 
 #include "model/Model.h"
-#include "colorUtils/ColorModes.h"
-#include "colorUtils/Colors.h"
-#include "engine/Engine.h"
+#include "color utils/ColorModes.h"
+#include "color utils/Colors.h"
+#include "audio processor/Engine.h"
 #include "networking/ServerManager.h"
 #include "analogIO/AnalogManager.h"
 #include "ledIO/LedStripManager.h"

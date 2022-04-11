@@ -1,7 +1,7 @@
 #pragma once
 
 #include <esp32-hal-ledc.h>
-#include "colorUtils/Colors.h"
+#include "color utils/Colors.h"
 #include "controller/Controller.h"
 
 // PWM properties

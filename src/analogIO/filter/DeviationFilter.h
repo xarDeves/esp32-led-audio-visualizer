@@ -7,10 +7,11 @@ class DeviationFilter{
 public:
 
     DeviationFilter(unsigned char buffLen);
-
-    unsigned short deviate(unsigned short &value);
     
     ~DeviationFilter();
+
+protected:
+    unsigned short deviate(unsigned short &value);
 
 private:
     unsigned short *buff;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "colorUtils/Colors.h"
+#include "Colors.h"
 
 namespace ColorConvertions {
 
