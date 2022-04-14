@@ -29,10 +29,12 @@ public:
     void computeDeviders();
     void modifySmoothers();
 
+    ~Engine();
+
 private:
     Controller *controller;
     Model *model;
-	arduinoFFT *FFT;
+	arduinoFFT FFT;
 
     Colors::ABSTRACT clrAbstract;
 

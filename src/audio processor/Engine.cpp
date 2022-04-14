@@ -1,20 +1,18 @@
 #include "Engine.h"
 
 Engine::Engine(Model &model, ColorModes mode, Controller &controller) :
+FFT(vReal, vImag, SAMPLES, SAMPLING_FREQ),
 rSmoother(model.engineInfo.rSmoothingLen), 
 gSmoother(model.engineInfo.gSmoothingLen), 
 bSmoother(model.engineInfo.bSmoothingLen){
 
-	FFT = new arduinoFFT(vReal, vImag, SAMPLES, SAMPLING_FREQ);
+	samplingPeriodUs = round(1000000 * (1.0 / SAMPLING_FREQ));
 
     this->controller = &controller;
     this->model = &model;
 
 	setMode(mode);
-
     computeDeviders();
-
-	samplingPeriodUs = round(1000000 * (1.0 / SAMPLING_FREQ));
 }
 
 void Engine::setMode(ColorModes mode){
@@ -55,10 +53,10 @@ void Engine::readAudioData() {
 
 void Engine::executeFFT() {
 
-	FFT->DCRemoval();
-	FFT->Windowing(FFT_WIN_TYP_HAMMING, FFT_FORWARD);
-	FFT->Compute(FFT_FORWARD);
-	FFT->ComplexToMagnitude();
+	FFT.DCRemoval();
+	FFT.Windowing(FFT_WIN_TYP_HAMMING, FFT_FORWARD);
+	FFT.Compute(FFT_FORWARD);
+	FFT.ComplexToMagnitude();
 }
 
 inline double Engine::normalize(int _start, int _end, float tMin, float tMax, float devider) {
@@ -140,3 +138,5 @@ void Engine::computeDeviders(){
 	midDevider = log(model->engineInfo.midEnd - model->engineInfo.midStart);
 	highDevider = log(model->engineInfo.highEnd - model->engineInfo.highStart);
 }
+
+Engine::~Engine(){}

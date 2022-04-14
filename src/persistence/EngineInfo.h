@@ -19,6 +19,10 @@ namespace EngineInfo{
         unsigned char rSmoothingLen = 0;
         unsigned char gSmoothingLen = 0;
         unsigned char bSmoothingLen = 0;
+
+        //float band1Weight = 1;
+        //float band2Weight = 1;
+        //float band3Weight = 1;
     };
 
 }

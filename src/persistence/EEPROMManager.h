@@ -1,39 +1,31 @@
 #pragma once
 
-#include "EEPROM.h"
+#include <FS.h>
+#include <SPIFFS.h>
 #include "NetInfo.h"
 //#include "EngineInfo.h"
 
 namespace EEPROMManager{
 
-    /*static void readEngineInfo(EngineInfo::info &info){
-
-        EEPROM.begin(info.size);
-
-        EEPROM.get(NetInfo::info::size, info);
-    }
-
-    static void writeEngineInfo(EngineInfo::info &info){
-
-        EEPROM.begin(info.size);
-
-        EEPROM.put(NetInfo::info::size, info);
-        EEPROM.commit();
-    }*/
-
     static void readWifiCredentials(NetInfo::info &info){
 
-        EEPROM.begin(sizeof(info));
+        SPIFFS.begin(true);
 
-        EEPROM.get(0, info);
+        File file = SPIFFS.open("/netInfo.txt", "r");
+        file.read((byte*)&info, sizeof(info));
+        file.close();
+
+        SPIFFS.end();
     }
 
-    static void writeWifiCredentials(NetInfo::info &info){
+    static void writeWifiCredentials(NetInfo::info info){
 
-        EEPROM.begin(sizeof(info));
+        SPIFFS.begin(true);
 
-        EEPROM.put(0, info);
-        EEPROM.commit();
+        File file = SPIFFS.open("/netInfo.txt", "w");
+        file.write((byte*)&info, sizeof(info));
+        file.close();
+
+        SPIFFS.end();
     }
-
 }
