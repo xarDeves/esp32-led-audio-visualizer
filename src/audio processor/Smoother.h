@@ -7,13 +7,15 @@ class Smoother{
 public:
     Smoother(unsigned char len);
 
-    void smooth(unsigned char &clrVal);    
-    void setLen(unsigned char len);
+    void adjustSmoothing(unsigned char len);
 
     ~Smoother();
 
+protected:
+    double smooth(double &val);    
+
 private:
-    unsigned char buff[CAPACITY] = {};
+    double buff[CAPACITY] = {};
     unsigned char buffCount;
     unsigned char len;
 };

@@ -1,12 +1,12 @@
 #include "Potentiometer.h"
 
-Potentiometer::Potentiometer(unsigned char filterBuffLen, unsigned char gpioPin)
- : DeviationFilter(filterBuffLen), pin(gpioPin){}
+Potentiometer::Potentiometer(unsigned char filterBuffLen, unsigned char gpioPin): 
+DeviationFilter(filterBuffLen), pin(gpioPin){}
 
 void Potentiometer::read(){
 
     raw = analogRead(pin);
-    deviated = deviate(raw);
+    deviate(raw);
 }
 
 int Potentiometer::mapRaw(int val){

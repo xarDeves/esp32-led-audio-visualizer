@@ -25,9 +25,9 @@ void Controller::FFTOn(){
     engine->executeCycle();
     analogManager->pollSmoothingValues();
 
-    /*unsigned long end = micros();
-    unsigned long delta = end - start;
-    Serial.println(delta);*/
+    //unsigned long end = micros();
+    //unsigned long delta = end - start;
+    //Serial.println(delta);
 }
 
 void Controller::FFTOff(){

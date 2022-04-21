@@ -3,13 +3,12 @@
 #include <Arduino.h>
 #include "../filter/DeviationFilter.h"
 
-class Potentiometer : DeviationFilter{
+class Potentiometer : public DeviationFilter{
 
 public:
     Potentiometer(unsigned char filterBuffLen, unsigned char gpioPin);
 
     unsigned short raw; 
-    unsigned short deviated;
     
     void read();
     int mapRaw(int val);

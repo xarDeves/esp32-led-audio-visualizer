@@ -5,8 +5,9 @@
 class DeviationFilter{
 
 public:
-
     DeviationFilter(unsigned char buffLen);
+
+    unsigned short deviated;
     
     ~DeviationFilter();
 

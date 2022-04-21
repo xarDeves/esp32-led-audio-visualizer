@@ -2,25 +2,25 @@
 
 Smoother::Smoother(unsigned char len){
 
-    setLen(len);
+    adjustSmoothing(len);
 }
 
-void Smoother::smooth(unsigned char &clrVal){
+double Smoother::smooth(double &val){
     
-    if (len == 0) return;
+    if (len == 0) return val;
 
-    unsigned short s = 1;    
+    double s = 1;    
     
-    buff[buffCount] = clrVal;
+    buff[buffCount] = val;
     buffCount++;
     if (buffCount >= len) buffCount = 0;
 
-    for (int i = 0; i < len; i++) s += buff[i];
+    for (unsigned char i = 0; i < len; i++) s += buff[i];
 
-    clrVal = s/len;
+    return s/len;
 }   
 
-void Smoother::setLen(unsigned char len){
+void Smoother::adjustSmoothing(unsigned char len){
     
     this->len = len;
 }
