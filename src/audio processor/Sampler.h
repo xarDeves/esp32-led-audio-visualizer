@@ -1,5 +1,7 @@
 #pragma once
 
+#include "debug.h"
+
 #include "arduinoFFT.h"
 // FFT parameters
 // Must be a power of 2

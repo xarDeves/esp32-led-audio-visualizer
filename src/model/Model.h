@@ -1,5 +1,7 @@
 #pragma once
 
+#include "debug.h"
+
 #include "persistence/EngineInfo.h"
 #include "color utils/Colors.h"
 

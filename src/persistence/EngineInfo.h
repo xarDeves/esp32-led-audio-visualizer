@@ -1,5 +1,7 @@
 #pragma once
 
+#include "debug.h"
+
 namespace EngineInfo{
 
     struct info{

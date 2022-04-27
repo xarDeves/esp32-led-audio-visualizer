@@ -175,6 +175,7 @@ void ServerManager::initAccessPoint() {
 
     on("/", HTTP_GET, std::bind(&ServerManager::handleHomePageAccessPoint, this, std::placeholders::_1));
     on("/submit", HTTP_POST, std::bind(&ServerManager::handleReceivedCredentials, this, std::placeholders::_1));
+	on("/colorChanged", HTTP_POST, std::bind(&ServerManager::handleReceivedColors, this, std::placeholders::_1));
 
     begin();
 
@@ -246,12 +247,23 @@ void ServerManager::handleReceivedColors(AsyncWebServerRequest *request){
 	model->clrRGB.g = (unsigned char)request->getParam(1)->value().toInt();
 	model->clrRGB.b = (unsigned char)request->getParam(2)->value().toInt();
 
+    #ifdef DEBUG_APP
+        Serial.print("clr received: ");
+        Serial.print(model->clrRGB.r);
+        Serial.print(model->clrRGB.g);
+        Serial.println(model->clrRGB.b);
+    #endif
+
 	request->send(200, "text/html");
 
     controller->colorChanged();
 }
 
 void ServerManager::handleFftPressed(AsyncWebServerRequest *request){
+
+    #ifdef DEBUG_APP
+        Serial.println("fft press received");
+    #endif
 
 	request->send(200, "text/html");
     controller->FFTOnWifi();

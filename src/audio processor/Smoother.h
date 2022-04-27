@@ -1,5 +1,7 @@
 #pragma once
 
+#include "debug.h"
+
 #define CAPACITY 255
 
 class Smoother{

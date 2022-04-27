@@ -1,9 +1,9 @@
 #include "Engine.h"
 
 Engine::Engine(Model &model, ColorModes mode, Controller &controller) :
-bandA(model.engineInfo.lowStart, model.engineInfo.lowEnd, model.engineInfo.rSmoothingLen, vReal), 
-bandB(model.engineInfo.midStart, model.engineInfo.midEnd, model.engineInfo.gSmoothingLen, vReal), 
-bandC(model.engineInfo.highStart, model.engineInfo.highEnd, model.engineInfo.bSmoothingLen, vReal){
+bandA(model.engineInfo.lowStart, model.engineInfo.lowEnd, model.engineInfo.rSmoothingLen, model.engineInfo.noise, vReal), 
+bandB(model.engineInfo.midStart, model.engineInfo.midEnd, model.engineInfo.gSmoothingLen, model.engineInfo.noise, vReal), 
+bandC(model.engineInfo.highStart, model.engineInfo.highEnd, model.engineInfo.bSmoothingLen, model.engineInfo.noise, vReal){
 
     this->controller = &controller;
     this->model = &model;
@@ -46,35 +46,36 @@ void Engine::modifySmoothers(){
 
 void Engine::toRGB() {
 
-    model->clrRGB.r = bandA.renderRGB();
-    model->clrRGB.g = bandB.renderRGB();
-    model->clrRGB.b = bandC.renderRGB();
+	model->clrRGB.r = map(bandA.sumBand(), model->engineInfo.noise, model->engineInfo.rMax, 0 , 255);
+	model->clrRGB.g = map(bandB.sumBand(), model->engineInfo.noise, model->engineInfo.rMax, 0 , 255);
+	model->clrRGB.b = map(bandC.sumBand(), model->engineInfo.noise, model->engineInfo.rMax, 0 , 255);
 }
 
 void Engine::toHSL() {
 	
-	//clrAbstract.a = normalize(model->engineInfo.lowStart, model->engineInfo.lowEnd, 0.0f, 360.0f, lowDevider);
-	//clrAbstract.b = normalize(model->engineInfo.midStart, model->engineInfo.midEnd, 0.0f, 1.0f, midDevider);
-	//clrAbstract.c = normalize(model->engineInfo.highStart, model->engineInfo.highEnd, 0.0f, 1.0f, highDevider);
-	
+	mapHSX();
 	ColorConvertions::HSLtoRGB(clrAbstract, model->clrRGB);
 }
 
 void Engine::toHSV() {
 	
-	//clrAbstract.a = normalize(model->engineInfo.lowStart, model->engineInfo.lowEnd, 0.0f, 360.0f, lowDevider);
-	//clrAbstract.b = normalize(model->engineInfo.midStart, model->engineInfo.midEnd, 0.0f, 1.0f, midDevider);
-	//clrAbstract.c = normalize(model->engineInfo.highStart, model->engineInfo.highEnd, 0.0f, 1.0f, highDevider);
+	mapHSX();
 	ColorConvertions::HSVtoRGB(clrAbstract, model->clrRGB);
 }
 
 void Engine::toLAB() {
-	
-	//clrAbstract.a = normalize(model->engineInfo.lowStart, model->engineInfo.lowEnd, 0.0f, 100.0f, lowDevider);
-	//clrAbstract.b = normalize(model->engineInfo.midStart, model->engineInfo.midEnd, -100.0f, 100.0f, midDevider);
-	//clrAbstract.c = normalize(model->engineInfo.highStart, model->engineInfo.highEnd, -100.0f, 100.0f, highDevider);
 
+	clrAbstract.a = map(bandA.sumBand(), model->engineInfo.noise, model->engineInfo.rMax, 0.0f, 100.0f);
+	clrAbstract.b = map(bandB.sumBand(), model->engineInfo.noise, model->engineInfo.rMax, -100.0f, 100.0f);
+	clrAbstract.c = map(bandC.sumBand(), model->engineInfo.noise, model->engineInfo.rMax, -100.0f, 100.0f);	
 	ColorConvertions::LABtoRGB(clrAbstract, model->clrRGB);
+}
+
+void Engine::mapHSX(){
+
+	clrAbstract.a = map(bandA.sumBand(), model->engineInfo.noise, model->engineInfo.rMax, 0.0f, 360.0f);
+	clrAbstract.b = map(bandB.sumBand(), model->engineInfo.noise, model->engineInfo.rMax, 0.0f, 1.0f);
+	clrAbstract.c = map(bandC.sumBand(), model->engineInfo.noise, model->engineInfo.rMax, 0.0f, 1.0f);
 }
 
 Engine::~Engine(){}

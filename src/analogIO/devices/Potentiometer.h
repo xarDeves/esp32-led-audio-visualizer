@@ -1,5 +1,7 @@
 #pragma once
 
+#include "debug.h"
+
 #include <Arduino.h>
 #include "../filter/DeviationFilter.h"
 

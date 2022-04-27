@@ -1,24 +1,20 @@
 #pragma once
 
+#include "debug.h"
+
 #include <Arduino.h>
 #include "Smoother.h"
 
-#define NOISE 200
-#define MAX 150000
-
+//TODO deprecate noise
 class Band : public Smoother{
 
 public:
-    Band(unsigned char &lower, unsigned char &upper, unsigned char &smoothingLen, double *vReal);
+    Band(unsigned char &lower, unsigned char &upper, unsigned char &smoothingLen, unsigned int  &noise, double *vReal);
 
+    double sumBand();
+    void adjustNoise(unsigned int  &noise);
     void adjustLimits(unsigned char &lower, unsigned char &upper);
     
-    unsigned char renderRGB();
-    //unsigned char renderHue();
-    //unsigned char renderSaturation();
-    //unsigned char renderValue();
-    //unsigned char renderLightness();
-
     ~Band();
 
 private:
@@ -26,9 +22,8 @@ private:
     unsigned char *upper;
     unsigned char *lower;
 
-    double bandSum;
     float devider;
+    unsigned int *noise;
 
-    void sumBand();
     void computeDevider();
 };

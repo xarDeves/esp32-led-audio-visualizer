@@ -1,5 +1,7 @@
 #pragma once
 
+#include "debug.h"
+
 #include <math.h>
 
 class DeviationFilter{

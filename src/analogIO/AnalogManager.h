@@ -1,5 +1,7 @@
 #pragma once
 
+#include "debug.h"
+
 #include "filter/DeviationFilter.h"
 #include "controller/Controller.h"
 #include "devices/Potentiometer.h"

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "debug.h"
+
 namespace Colors{
 
 	struct RGB{

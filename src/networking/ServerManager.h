@@ -1,5 +1,7 @@
 #pragma once
 
+#include "debug.h"
+
 #include <WiFi.h>
 #include <ESPAsyncWebServer.h>
 #include "persistence/EEPROMManager.h"

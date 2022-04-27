@@ -1,5 +1,7 @@
 #pragma once
 
+#include "debug.h"
+
 #include <FS.h>
 #include <SPIFFS.h>
 #include "NetInfo.h"

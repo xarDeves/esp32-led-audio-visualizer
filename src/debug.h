@@ -1,0 +1,2 @@
+#define DEBUG_APP
+#define BENCHMARK_FFT

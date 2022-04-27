@@ -1,5 +1,7 @@
 #pragma once
 
+#include "debug.h"
+
 #include <esp32-hal-ledc.h>
 #include "color utils/Colors.h"
 #include "controller/Controller.h"

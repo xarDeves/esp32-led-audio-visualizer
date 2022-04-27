@@ -1,5 +1,7 @@
 #pragma once
 
+#include "debug.h"
+
 #include "persistence/EngineInfo.h"
 #include "model/Model.h"
 #include "Band.h"
@@ -36,6 +38,8 @@ private:
 	void toHSV();
 	void toHSL();
 	void toLAB();
+
+	void mapHSX();
 
 	void (Engine::*processAudioData)();
 };

@@ -1,28 +1,23 @@
 #include "Band.h"
 
-Band::Band(unsigned char &lower, unsigned char &upper, unsigned char &smoothingLen, double *vReal) : 
+Band::Band(unsigned char &lower, unsigned char &upper, unsigned char &smoothingLen, unsigned int  &noise, double *vReal) : 
 Smoother(smoothingLen){
 
+    adjustNoise(noise);
 	adjustLimits(lower, upper);
 	this->vReal = vReal;
 }
 
-unsigned char Band::renderRGB(){
+double Band::sumBand() {
 
-    sumBand();
-    return map(smooth(bandSum), NOISE, MAX, 0 , 255);
-}
-
-void Band::sumBand() {
-
-    bandSum = 0.0;
+    double sum = 0.0;
 
 	for (int i = *lower; i < *upper; i++) {
-		if (vReal[i] > NOISE)
-			bandSum += vReal[i];
+		if (vReal[i] > *noise)
+			sum += vReal[i];
 	}
 
-    bandSum = bandSum / devider;
+    return sum / devider;
 }
 
 void Band::adjustLimits(unsigned char &lower, unsigned char &upper){
@@ -30,6 +25,11 @@ void Band::adjustLimits(unsigned char &lower, unsigned char &upper){
     this->lower = &lower;
     this->upper = &upper;
     computeDevider();
+}
+
+void Band::adjustNoise(unsigned int &noise){
+
+    this->noise = &noise;
 }
 
 void Band::computeDevider(){

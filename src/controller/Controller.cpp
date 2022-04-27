@@ -20,14 +20,19 @@ void Controller::run(){
 
 void Controller::FFTOn(){
 
-    //unsigned long start = micros();
-
+    #ifdef BENCHMARK_FFT
+        unsigned long start = micros();
+    #endif
+    
     engine->executeCycle();
     analogManager->pollSmoothingValues();
 
-    //unsigned long end = micros();
-    //unsigned long delta = end - start;
-    //Serial.println(delta);
+    #ifdef BENCHMARK_FFT
+        unsigned long end = micros();
+        unsigned long delta = end - start;
+        Serial.println(delta);
+    #endif
+
 }
 
 void Controller::FFTOff(){

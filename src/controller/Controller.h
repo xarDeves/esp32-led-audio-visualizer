@@ -1,5 +1,7 @@
 #pragma once
 
+#include "debug.h"
+
 #include "model/Model.h"
 #include "color utils/ColorModes.h"
 #include "color utils/Colors.h"
